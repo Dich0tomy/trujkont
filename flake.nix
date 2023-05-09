@@ -24,6 +24,8 @@
           xorg.libXcursor
           xorg.libXi
           libxkbcommon
+          libGL
+          libglvnd
 
           pkgconfig
 
@@ -31,6 +33,8 @@
           ninja
           meson
         ];
+
+        LD_LIBRARY_PATH="/run/opengl-driver/lib:/run/opengl-driver-32/lib";
       };
   });
 }
