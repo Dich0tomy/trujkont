@@ -1,6 +1,6 @@
 project(
   'trujnoknt',
-  'cpp',
+  [ 'cpp', 'c' ],
   version : '0.1.0',
   license: 'mit'
 )
@@ -23,6 +23,7 @@ include_dirs = [
 ]
 
 sources = files(
+  'src/glad.c',
   'src/main.cpp'
 )
 
@@ -30,5 +31,6 @@ executable(
   'turjnoknt',
   sources,
   dependencies: local_deps,
+  include_directories: include_dirs,
   override_options: compilation_options,
 )
