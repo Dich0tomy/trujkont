@@ -19,7 +19,7 @@ debug: meson-exists setup-debug
 
 alias r := release
 release: meson-exists setup-release
-	meson configure --buildtype release -Db_sanitize=none --optimization 3 -Db_lto=true -Dcpp_debugstl=false {{ release_build_dir }
+	meson configure --buildtype release -Db_sanitize=none --optimization 3 -Db_lto=true -Dcpp_debugstl=false {{ release_build_dir }}
 	meson compile -C {{ release_build_dir }}
 
 # vim: ft=make
