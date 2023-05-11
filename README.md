@@ -2,16 +2,9 @@
 
 # Compilation
 
-`just s`/`just setup` to setup the project
+`just d` to compile debug version
+`just r` to compile release version
 
-
-`just d`/`just debug` to set a development version
-
-
-`just r`/`just release` to set a release version
-
-
-`just c`/`just c` to compile it
-
+Then run `build_debug/turjnoknt` or `build_release/turjnoknt` for debug and release versions respectively.
 
 If you don't have just, just copy what's in `Justfile` for the respecting commands (e.g. `meson setup build` for `just s`).
