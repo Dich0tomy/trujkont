@@ -1,29 +1,23 @@
-shared_options := "--warnlevel 3 -Dcpp_std=c++20"
-build_directory := "build"
-
 meson-exists:
 	@if ! which meson 1>/dev/null 2>&1; then echo 'Cannot find meson executable'; exit 1; fi
 
-default: compile
 
-alias s := setup
-setup: meson-exists
-	meson setup {{ build_directory }}
+alias sr := setup-release
+setup-release: meson-exists
+	meson setup build_release
 
-alias c := compile
-compile: meson-exists setup
-	meson compile -C {{ build_directory }}
+alias sd := setup-debug
+setup-debug: meson-exists
+	meson setup build_debug
 
 alias d := debug
-debug: meson-exists
-	meson configure --buildtype debug --debug -Db_lundef=false --optimization 0 -Dcpp_debugstl=true -Db_sanitize=address,undefined {{ shared_options }} {{ build_directory }}
+debug: meson-exists setup-debug
+	meson configure --buildtype debug --debug -Db_lundef=false --optimization 0 -Dcpp_debugstl=true -Db_sanitize=address,undefined --warnlevel 3 build_debug
+	meson compile -C build_debug
 
 alias r := release
-release: meson-exists
-	meson configure --buildtype release -Db_sanitize=none --optimization 3 -Db_lto=true {{ shared_options }} {{ build_directory }}
-
-alias cl := clean
-clean:
-	rm -rf build
+release: meson-exists setup-release
+	meson configure --buildtype release -Db_sanitize=none --optimization 3 -Db_lto=true -Dcpp_debugstl=false build_release
+	meson compile -C build_release
 
 # vim: ft=make
