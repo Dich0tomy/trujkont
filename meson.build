@@ -24,7 +24,9 @@ include_dirs = [
 
 sources = files(
   'src/glad.c',
-  'src/main.cpp'
+
+  'src/main.cpp',
+  'src/callbacks.cpp'
 )
 
 executable(
