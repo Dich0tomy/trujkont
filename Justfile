@@ -1,8 +1,8 @@
 meson-exists:
 	@if ! which meson 1>/dev/null 2>&1; then echo 'Cannot find meson executable'; exit 1; fi
 
-release_build_dir = build_release
-debug_build_dir = build_debug
+release_build_dir := "build_release"
+debug_build_dir := "build_debug"
 
 alias sr := setup-release
 setup-release: meson-exists
