@@ -34,7 +34,7 @@
 
       devShells.default = with pkgs;
         mkShell.override {
-          stdenv = lowPrio llvmPackages_16.stdenv;
+          stdenv = lowPrio llvmPackages_15.stdenv;
         } {
           packages = [
             ### opengl and such
@@ -51,7 +51,6 @@
             clang-tools_16
             nixgl.auto.nixGLDefault
             pkgconfig
-            llvmPackages_16.bintools
 
             #### this project specific
             just
