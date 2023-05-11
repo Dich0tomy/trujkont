@@ -16,7 +16,7 @@ compile: meson-exists setup
 
 alias d := debug
 debug: meson-exists
-	meson configure --buildtype debug --debug --optimization 0 -Dcpp_debugstl=true -Db_sanitize=address,undefined {{ shared_options }} {{ build_directory }}
+	meson configure --buildtype debug --debug -Db_lundef=false --optimization 0 -Dcpp_debugstl=true -Db_sanitize=address,undefined {{ shared_options }} {{ build_directory }}
 
 alias r := release
 release: meson-exists
