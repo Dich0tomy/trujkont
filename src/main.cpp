@@ -49,9 +49,6 @@ auto main() -> int {
 
   glfwSetFramebufferSizeCallback(window, callbacks::framebuffer_size_callback);
 
-  auto rd = std::random_device();
-  std::uniform_real_distribution<float> dist(0.0f, 1.0f);
-
   while(not glfwWindowShouldClose(window)) {
     for(auto i = 0.0f; i < std::numbers::pi * 2; i += 0.1f) {
       glClearColor(
