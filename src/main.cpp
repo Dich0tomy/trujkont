@@ -1,4 +1,8 @@
 #include <cstdlib>
+#include <numbers>
+#include <random>
+
+#include <trujkont/callbacks.hpp>
 
 #include <fmt/format.h>
 
@@ -8,17 +12,18 @@
 
 // clang-format on
 
+auto enable_debug_info() {
+  glfwSetErrorCallback(callbacks::glfw_error_callback);
+
+  glEnable(GL_DEBUG_OUTPUT);
+  glDebugMessageCallback(callbacks::gl_error_callback, nullptr);
+}
+
 auto main() -> int {
   glfwInit();
   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
   glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-
-  glfwSetErrorCallback([](int error_code, char const* desc) {
-    fmt::print(stderr, "{}\n", desc);
-
-    std::exit(error_code);
-  });
 
   auto constexpr window_width = 800;
   auto constexpr window_height = 600;
@@ -42,12 +47,26 @@ auto main() -> int {
     return -1;
   }
 
-  glfwSetFramebufferSizeCallback(window, [](GLFWwindow* window, int width, int height) {
-    glViewport(0, 0, width, height);
-  });
+  glfwSetFramebufferSizeCallback(window, callbacks::framebuffer_size_callback);
+
+  auto rd = std::random_device();
+  std::uniform_real_distribution<float> dist(0.0f, 1.0f);
 
   while(not glfwWindowShouldClose(window)) {
+    for(auto i = 0.0f; i < std::numbers::pi * 2; i += 0.1f) {
+      glClearColor(
+        std::abs(std::sin(i)),
+        std::abs(std::sin(i)),
+        std::abs(std::sin(i)),
+        1.0f
+      );
+
+      glClear(GL_COLOR_BUFFER_BIT);
+    }
+
     glfwSwapBuffers(window);
     glfwPollEvents();
   }
+
+  glfwTerminate();
 }
