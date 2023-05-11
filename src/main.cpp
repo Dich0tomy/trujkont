@@ -14,7 +14,7 @@ auto main() -> int {
   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
   glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-  glfwSetErrorCallback([](int error_code, char const *desc) {
+  glfwSetErrorCallback([](int error_code, char const* desc) {
     fmt::print(stderr, "{}\n", desc);
 
     std::exit(error_code);
@@ -23,24 +23,31 @@ auto main() -> int {
   auto constexpr window_width = 800;
   auto constexpr window_height = 600;
 
-  fmt::print("[[[[ Checkpoint 1. ]]]]\n");
-  auto *const window = glfwCreateWindow(window_width, window_height,
-                                        "Szopu jest gejem", nullptr, nullptr);
+  auto* const window = glfwCreateWindow(window_width, window_height, "Szopu jest gejem", nullptr, nullptr);
 
-  if (not window) {
+  if(not window) {
     fmt::print(stderr, "Failed to initialize OpenGL window :(\n");
     glfwTerminate();
 
     return -1;
   }
 
-  fmt::print("[[[[ Checkpoint 2. ]]]]\n");
   glfwMakeContextCurrent(window);
 
-  if (not gladLoadGLLoader(
-          reinterpret_cast<GLADloadproc>(glfwGetProcAddress))) {
+  if(not gladLoadGLLoader(
+       reinterpret_cast<GLADloadproc>(glfwGetProcAddress)
+     )) {
     fmt::print(stderr, "Failed to initialize GLAD\n");
 
     return -1;
+  }
+
+  glfwSetFramebufferSizeCallback(window, [](GLFWwindow* window, int width, int height) {
+    glViewport(0, 0, width, height);
+  });
+
+  while(not glfwWindowShouldClose(window)) {
+    glfwSwapBuffers(window);
+    glfwPollEvents();
   }
 }
