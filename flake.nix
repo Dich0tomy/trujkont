@@ -3,21 +3,23 @@
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
 
     flake-utils.url = "github:numtide/flake-utils";
+
+    nixgl.url = "github:guibou/nixGL";
   };
 
   outputs = {
     nixpkgs,
     flake-utils,
     ...
-  }: flake-utils.lib.eachDefaultSystem (system: let
-    pkgs = nixpkgs.legacyPackages.${system};
-  in {
-    formatter = pkgs.alejandra;
+  } @ inputs:
+    flake-utils.lib.eachDefaultSystem (system: let
+      pkgs = import nixpkgs {
+        inherit system;
+        overlays = [ inputs.nixgl.overlay ];
+      };
 
-    devShells.default = pkgs.mkShell.override {
-        stdenv = pkgs.clang14Stdenv;
-      } {
-        packages = with pkgs; [
+      libPath = with pkgs;
+        lib.makeLibraryPath [
           xorg.libX11
           xorg.libXrandr
           xorg.libXinerama
@@ -26,15 +28,38 @@
           libxkbcommon
           libGL
           libglvnd
-
-          pkgconfig
-
-          just
-          ninja
-          meson
         ];
+    in {
+      formatter = pkgs.alejandra;
 
-        LD_LIBRARY_PATH="/run/opengl-driver/lib:/run/opengl-driver-32/lib";
-      };
-  });
+      devShells.default = with pkgs;
+        mkShell.override {
+          stdenv = lowPrio llvmPackages_16.stdenv;
+        } {
+          packages = [
+            ### opengl and such
+            xorg.libX11
+            xorg.libXrandr
+            xorg.libXinerama
+            xorg.libXcursor
+            xorg.libXi
+            libxkbcommon
+            libGL
+            libglvnd
+
+            ### cpp general
+            clang-tools_16
+            nixgl.auto.nixGLDefault
+            pkgconfig
+            llvmPackages_16.bintools
+
+            #### this project specific
+            just
+            ninja
+            meson
+          ];
+        };
+
+        CLANGD_PATH = "${pkgs.clang-tools_16}/bin/clangd";
+    });
 }
