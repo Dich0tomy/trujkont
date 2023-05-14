@@ -1,6 +1,7 @@
 #include <cstdlib>
 #include <numbers>
 #include <random>
+#include <array>
 
 #include <trujkont/callbacks.hpp>
 
@@ -19,8 +20,31 @@ auto enable_debug_info() {
   glDebugMessageCallback(callbacks::gl_error_callback, nullptr);
 }
 
+auto const vertex_shader_source = R"glsl(
+  #version 330 core
+  layout (location = 0) in vec3 aPos;
+
+  void main()
+  {
+    gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);
+  }
+)glsl";
+
+auto const frag_shader_source = R"glsl(
+  #version 330 core
+  out vec4 FragColor;
+
+  void main() {
+    FragColor = vec4(0.3f, 0.9f, 0.2f, 1.0f);
+  }
+)glsl";
+
 auto main() -> int {
-  glfwInit();
+  if(not glfwInit()) {
+    fmt::print(stderr, "GLFW init error\n");
+    return -1;
+  }
+
   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
   glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
@@ -39,26 +63,82 @@ auto main() -> int {
 
   glfwMakeContextCurrent(window);
 
-  if(not gladLoadGLLoader(
-       reinterpret_cast<GLADloadproc>(glfwGetProcAddress)
-     )) {
+  if(not gladLoadGL()) {
     fmt::print(stderr, "Failed to initialize GLAD\n");
-
     return -1;
   }
 
   glfwSetFramebufferSizeCallback(window, callbacks::framebuffer_size_callback);
 
+  // clang-format off
+  auto const vertices = std::array {
+    -0.5f, -0.5f, 0.0f,
+    0.5f, -0.5f, 0.0f,
+    0.0f, 0.5f, 0.0f
+  };
+  // clang-format on
+
+  auto vertex_shader = glCreateShader(GL_VERTEX_SHADER);
+  glShaderSource(vertex_shader, 1, &vertex_shader_source, nullptr);
+  glCompileShader(vertex_shader);
+
+  auto success = 0;
+  glGetShaderiv(vertex_shader, GL_COMPILE_STATUS, &success);
+  if(not success) {
+    std::array<char, 512> log;
+    glGetShaderInfoLog(vertex_shader, log.size(), nullptr, log.data());
+    fmt::print(stderr, "Vertex shader compilation failed! Log:\n\n{}\n", log.data());
+  }
+
+  auto fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
+  glShaderSource(fragment_shader, 1, &frag_shader_source, nullptr);
+  glCompileShader(fragment_shader);
+
+  success = 0;
+  glGetShaderiv(fragment_shader, GL_COMPILE_STATUS, &success);
+  if(not success) {
+    std::array<char, 512> log;
+    glGetShaderInfoLog(fragment_shader, log.size(), nullptr, log.data());
+    fmt::print(stderr, "Fragment shader compilation failed! Log:\n\n{}\n", log.data());
+  }
+
+  auto shader_program = glCreateProgram();
+  glAttachShader(shader_program, vertex_shader);
+  glAttachShader(shader_program, fragment_shader);
+  glLinkProgram(shader_program);
+
+  glDeleteShader(vertex_shader);
+  glDeleteShader(fragment_shader);
+
+  auto VBO = 0u;
+  auto VAO = 0u;
+  glGenVertexArrays(1, &VAO);
+  glGenBuffers(1, &VBO);
+
+  glBindVertexArray(VAO);
+  glBindBuffer(GL_ARRAY_BUFFER, VBO);
+  glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), vertices.data(), GL_STATIC_DRAW);
+
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), static_cast<void*>(0));
+  glEnableVertexAttribArray(0);
+
+  success = 0;
+  glGetProgramiv(shader_program, GL_LINK_STATUS, &success);
+  if(not success) {
+    std::array<char, 512> log;
+    glGetProgramInfoLog(shader_program, log.size(), nullptr, log.data());
+    fmt::print(stderr, "Fragment shader compilation failed! Log:\n\n{}\n", log.data());
+  }
+
   while(not glfwWindowShouldClose(window)) {
     for(auto i = 0.0f; i < std::numbers::pi * 2; i += 0.1f) {
-      glClearColor(
-        std::abs(std::sin(i)),
-        std::abs(std::sin(i)),
-        std::abs(std::sin(i)),
-        1.0f
-      );
-
+      glClearColor(0.2f, 0.3f, 0.5f, 1.f);
       glClear(GL_COLOR_BUFFER_BIT);
+
+      glUseProgram(shader_program);
+      glBindVertexArray(VAO);
+      glDrawArrays(GL_TRIANGLES, 0, 3);
+
       glfwSwapBuffers(window);
       glfwPollEvents();
     }
