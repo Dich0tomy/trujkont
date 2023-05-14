@@ -36,7 +36,7 @@
             libglvnd
 
             ### cpp general
-            clang-tools_16
+            clang-tools_15
             nixgl.auto.nixGLDefault
             pkgconfig
 
@@ -47,6 +47,6 @@
           ];
         };
 
-        CLANGD_PATH = "${pkgs.clang-tools_16}/bin/clangd";
+        CLANGD_PATH = "${pkgs.clang-tools_15}/bin/clangd";
     });
 }
