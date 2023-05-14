@@ -2,6 +2,8 @@
 
 # Compilation
 
+`just sd` to setup compile version
+`just sr` to setup release version
 `just d` to compile debug version
 `just r` to compile release version
 
