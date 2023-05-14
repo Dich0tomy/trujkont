@@ -59,10 +59,9 @@ auto main() -> int {
       );
 
       glClear(GL_COLOR_BUFFER_BIT);
+      glfwSwapBuffers(window);
+      glfwPollEvents();
     }
-
-    glfwSwapBuffers(window);
-    glfwPollEvents();
   }
 
   glfwTerminate();
