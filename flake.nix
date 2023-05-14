@@ -17,18 +17,6 @@
         inherit system;
         overlays = [ inputs.nixgl.overlay ];
       };
-
-      libPath = with pkgs;
-        lib.makeLibraryPath [
-          xorg.libX11
-          xorg.libXrandr
-          xorg.libXinerama
-          xorg.libXcursor
-          xorg.libXi
-          libxkbcommon
-          libGL
-          libglvnd
-        ];
     in {
       formatter = pkgs.alejandra;
 
@@ -36,7 +24,7 @@
         mkShell.override {
           stdenv = lowPrio llvmPackages_15.stdenv;
         } {
-          packages = [
+          buildInputs = [
             ### opengl and such
             xorg.libX11
             xorg.libXrandr
