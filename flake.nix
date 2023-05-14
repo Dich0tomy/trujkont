@@ -45,8 +45,11 @@
             ninja
             meson
           ];
+
+          env = {
+            CLANGD_PATH = "${pkgs.clang-tools_15}/bin/clangd";
+          };
         };
 
-        CLANGD_PATH = "${pkgs.clang-tools_15}/bin/clangd";
     });
 }
