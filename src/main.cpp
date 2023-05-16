@@ -71,10 +71,22 @@ auto main() -> int {
   glfwSetFramebufferSizeCallback(window, callbacks::framebuffer_size_callback);
 
   // clang-format off
-  auto const vertices = std::array {
+  auto const triangle_vertices = std::array {
     -0.5f, -0.5f, 0.0f,
     0.5f, -0.5f, 0.0f,
     0.0f, 0.5f, 0.0f
+  };
+
+  auto const vertices = std::array {
+    0.5f,  0.5f, 0.0f,
+    0.5f, -0.5f, 0.0f,
+    -0.5f, -0.5f, 0.0f,
+    -0.5f,  0.5f, 0.0f
+  };
+
+  auto const indices = std::array {
+    0, 1, 3,
+    1, 2, 3
   };
   // clang-format on
 
@@ -112,12 +124,19 @@ auto main() -> int {
 
   auto VBO = 0u;
   auto VAO = 0u;
-  glGenVertexArrays(1, &VAO);
-  glGenBuffers(1, &VBO);
+  auto EBO = 0u;
 
+  glGenBuffers(1, &VBO);
+  glGenBuffers(1, &EBO);
+
+  glGenVertexArrays(1, &VAO);
   glBindVertexArray(VAO);
+
   glBindBuffer(GL_ARRAY_BUFFER, VBO);
   glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), vertices.data(), GL_STATIC_DRAW);
+
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(float), indices.data(), GL_STATIC_DRAW);
 
   glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), static_cast<void*>(0));
   glEnableVertexAttribArray(0);
@@ -130,6 +149,8 @@ auto main() -> int {
     fmt::print(stderr, "Fragment shader compilation failed! Log:\n\n{}\n", log.data());
   }
 
+  glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
   while(not glfwWindowShouldClose(window)) {
     for(auto i = 0.0f; i < std::numbers::pi * 2; i += 0.1f) {
       glClearColor(0.2f, 0.3f, 0.5f, 1.f);
@@ -137,7 +158,8 @@ auto main() -> int {
 
       glUseProgram(shader_program);
       glBindVertexArray(VAO);
-      glDrawArrays(GL_TRIANGLES, 0, 3);
+      glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+      glBindVertexArray(0);
 
       glfwSwapBuffers(window);
       glfwPollEvents();
