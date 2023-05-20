@@ -4,6 +4,8 @@
 #include <array>
 
 #include <trujkont/callbacks.hpp>
+#include <trujkont/shader.hpp>
+#include <trujkont/shader_program.hpp>
 
 #include <fmt/format.h>
 
@@ -52,7 +54,7 @@ auto main() -> int {
   auto constexpr window_width = 800;
   auto constexpr window_height = 600;
 
-  auto* const window = glfwCreateWindow(window_width, window_height, "Szopu jest gejem", nullptr, nullptr);
+  auto* const window = glfwCreateWindow(window_width, window_height, "Creatix to kot", nullptr, nullptr);
 
   if(not window) {
     fmt::print(stderr, "Failed to initialize OpenGL window :(\n");
@@ -90,37 +92,20 @@ auto main() -> int {
   };
   // clang-format on
 
-  auto vertex_shader = glCreateShader(GL_VERTEX_SHADER);
-  glShaderSource(vertex_shader, 1, &vertex_shader_source, nullptr);
-  glCompileShader(vertex_shader);
-
-  auto success = 0;
-  glGetShaderiv(vertex_shader, GL_COMPILE_STATUS, &success);
-  if(not success) {
-    std::array<char, 512> log;
-    glGetShaderInfoLog(vertex_shader, log.size(), nullptr, log.data());
-    fmt::print(stderr, "Vertex shader compilation failed! Log:\n\n{}\n", log.data());
+  auto const vertex_shader = Shader(ShaderType::Vertex, vertex_shader_source);
+  if(vertex_shader.param<ShaderAttr::CompileStatus>() != GL_TRUE) {
+    fmt::print(stderr, "Vertex shader compilation failed! Log:\n\n{}\n", vertex_shader.log());
   }
 
-  auto fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
-  glShaderSource(fragment_shader, 1, &frag_shader_source, nullptr);
-  glCompileShader(fragment_shader);
-
-  success = 0;
-  glGetShaderiv(fragment_shader, GL_COMPILE_STATUS, &success);
-  if(not success) {
-    std::array<char, 512> log;
-    glGetShaderInfoLog(fragment_shader, log.size(), nullptr, log.data());
-    fmt::print(stderr, "Fragment shader compilation failed! Log:\n\n{}\n", log.data());
+  auto const frag_shader = Shader(ShaderType::Fragment, frag_shader_source);
+  if(frag_shader.param<ShaderAttr::CompileStatus>() != GL_TRUE) {
+    fmt::print(stderr, "Fragment shader compilation failed! Log:\n\n{}\n", frag_shader.log());
   }
 
-  auto shader_program = glCreateProgram();
-  glAttachShader(shader_program, vertex_shader);
-  glAttachShader(shader_program, fragment_shader);
-  glLinkProgram(shader_program);
-
-  glDeleteShader(vertex_shader);
-  glDeleteShader(fragment_shader);
+  auto const shader_program = ShaderProgram(vertex_shader, frag_shader);
+  if(not shader_program.param<ProgramAttr::LinkStatus>()) {
+    fmt::print(stderr, "Shader program linking failed! Log:\n\n{}\n", shader_program.log());
+  }
 
   auto VBO = 0u;
   auto VAO = 0u;
@@ -141,14 +126,6 @@ auto main() -> int {
   glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), static_cast<void*>(0));
   glEnableVertexAttribArray(0);
 
-  success = 0;
-  glGetProgramiv(shader_program, GL_LINK_STATUS, &success);
-  if(not success) {
-    std::array<char, 512> log;
-    glGetProgramInfoLog(shader_program, log.size(), nullptr, log.data());
-    fmt::print(stderr, "Fragment shader compilation failed! Log:\n\n{}\n", log.data());
-  }
-
   glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
   while(not glfwWindowShouldClose(window)) {
@@ -156,7 +133,7 @@ auto main() -> int {
       glClearColor(0.2f, 0.3f, 0.5f, 1.f);
       glClear(GL_COLOR_BUFFER_BIT);
 
-      glUseProgram(shader_program);
+      shader_program.use();
       glBindVertexArray(VAO);
       glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
       glBindVertexArray(0);
