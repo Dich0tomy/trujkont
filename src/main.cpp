@@ -103,7 +103,7 @@ auto main() -> int {
   }
 
   auto const shader_program = ShaderProgram(vertex_shader, frag_shader);
-  if(not shader_program.param<ProgramAttr::LinkStatus>()) {
+  if(shader_program.param<ProgramAttr::LinkStatus>() != GL_TRUE) {
     fmt::print(stderr, "Shader program linking failed! Log:\n\n{}\n", shader_program.log());
   }
 
