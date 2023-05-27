@@ -67,6 +67,7 @@ auto main() -> int {
 
   if(not gladLoadGL()) {
     fmt::print(stderr, "Failed to initialize GLAD\n");
+
     return -1;
   }
 
