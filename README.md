@@ -1,6 +1,6 @@
 # It's a trujkont
 
-![image](https://github.com/B4mbus/turkojnt/assets/75364377/91ca39a2-2246-44fc-9de4-9a2860bb4eea)
+![image](https://github.com/B4mbus/trujkont/assets/75364377/eed57427-c416-4549-826f-8058674d54e7)
 
 # Compilation
 
