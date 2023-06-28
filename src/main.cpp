@@ -23,29 +23,29 @@ auto enable_debug_info() {
 }
 
 auto const vertex_shader_source = R"glsl(
-  #version 330 core
+  #version 410 core
 
   in vec2 position;
   in vec3 color;
 
-  out vec3 Color;
+  layout(location = 0) out vec3 out_color;
 
   void main()
   {
-    Color = color;
+    out_color = color;
     gl_Position = vec4(position, 0.0, 1.0);
   }
 )glsl";
 
 auto const frag_shader_source = R"glsl(
-  #version 330 core
+  #version 410 core
 
-  in vec3 Color;
+  layout(location = 0) in vec3 color;
 
   out vec4 frag_color;
 
   void main() {
-    frag_color = vec4(Color, 0.0f);
+    frag_color = vec4(color, 0.0f);
   }
 )glsl";
 
