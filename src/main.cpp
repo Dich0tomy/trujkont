@@ -24,24 +24,34 @@ auto enable_debug_info() {
 
 auto const vertex_shader_source = R"glsl(
   #version 330 core
-  layout (location = 0) in vec3 aPos;
+
+  in vec2 position;
+  in vec3 color;
+
+  out vec3 Color;
 
   void main()
   {
-    gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);
+    Color = color;
+    gl_Position = vec4(position, 0.0, 1.0);
   }
 )glsl";
 
 auto const frag_shader_source = R"glsl(
   #version 330 core
-  out vec4 FragColor;
+
+  in vec3 Color;
+
+  out vec4 frag_color;
 
   void main() {
-    FragColor = vec4(0.3f, 0.9f, 0.2f, 1.0f);
+    frag_color = vec4(Color, 0.0f);
   }
 )glsl";
 
 auto main() -> int {
+  fmt::print("GLFW version: '{}'", glfwGetVersionString());
+
   if(not glfwInit()) {
     fmt::print(stderr, "GLFW init error\n");
     return -1;
@@ -50,11 +60,14 @@ auto main() -> int {
   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
   glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+  glfwWindowHint(GLFW_TRANSPARENT_FRAMEBUFFER, GLFW_TRUE);
 
   auto constexpr window_width = 800;
   auto constexpr window_height = 600;
 
   auto* const window = glfwCreateWindow(window_width, window_height, "Creatix to kot", nullptr, nullptr);
+
+  glfwSetWindowAttrib(window, GLFW_DECORATED, GLFW_FALSE);
 
   if(not window) {
     fmt::print(stderr, "Failed to initialize OpenGL window :(\n");
@@ -73,26 +86,6 @@ auto main() -> int {
 
   glfwSetFramebufferSizeCallback(window, callbacks::framebuffer_size_callback);
 
-  // clang-format off
-  auto const triangle_vertices = std::array {
-    -0.5f, -0.5f, 0.0f,
-    0.5f, -0.5f, 0.0f,
-    0.0f, 0.5f, 0.0f
-  };
-
-  auto const vertices = std::array {
-    0.5f,  0.5f, 0.0f,
-    0.5f, -0.5f, 0.0f,
-    -0.5f, -0.5f, 0.0f,
-    -0.5f,  0.5f, 0.0f
-  };
-
-  auto const indices = std::array {
-    0, 1, 3,
-    1, 2, 3
-  };
-  // clang-format on
-
   auto const vertex_shader = Shader(ShaderType::Vertex, vertex_shader_source);
   if(vertex_shader.param<ShaderAttr::CompileStatus>() != GL_TRUE) {
     fmt::print(stderr, "Vertex shader compilation failed! Log:\n\n{}\n", vertex_shader.log());
@@ -107,41 +100,58 @@ auto main() -> int {
   if(shader_program.param<ProgramAttr::LinkStatus>() != GL_TRUE) {
     fmt::print(stderr, "Shader program linking failed! Log:\n\n{}\n", shader_program.log());
   }
+  shader_program.use();
 
-  auto VBO = 0u;
-  auto VAO = 0u;
+  /*
+  auto const indices = std::array {
+    0, 1, 2,
+  };
+
   auto EBO = 0u;
-
-  glGenBuffers(1, &VBO);
   glGenBuffers(1, &EBO);
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(float), indices.data(), GL_STATIC_DRAW); */
 
+  auto VAO = 0u;
   glGenVertexArrays(1, &VAO);
   glBindVertexArray(VAO);
 
+  auto const attrs_per_vertex = 5;
+  // clang-format off
+  auto const vertices = std::array {
+    0.0f,  0.5f, 1.0f, 0.0f, 0.0f,
+    0.5f, -0.5f, 0.0f, 1.0f, 0.0f,
+    -0.5f, -0.5f, 0.0f, 0.0f, 1.0f,
+  };
+  // clang-format on
+
+  auto VBO = 0u;
+  glGenBuffers(1, &VBO);
   glBindBuffer(GL_ARRAY_BUFFER, VBO);
   glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), vertices.data(), GL_STATIC_DRAW);
 
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-  glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(float), indices.data(), GL_STATIC_DRAW);
+  auto const position_loc = glGetAttribLocation(shader_program.id, "position");
+  glVertexAttribPointer(position_loc, 2, GL_FLOAT, GL_FALSE, attrs_per_vertex * sizeof(float), 0);
+  glEnableVertexAttribArray(position_loc);
 
-  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), static_cast<void*>(0));
-  glEnableVertexAttribArray(0);
+  auto const color_loc = glGetAttribLocation(shader_program.id, "color");
+  glVertexAttribPointer(color_loc, 3, GL_FLOAT, GL_FALSE, attrs_per_vertex * sizeof(float), reinterpret_cast<void*>(2 * sizeof(float)));
+  glEnableVertexAttribArray(color_loc);
 
-  glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+  // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
   while(not glfwWindowShouldClose(window)) {
-    for(auto i = 0.0f; i < std::numbers::pi * 2; i += 0.1f) {
-      glClearColor(0.2f, 0.3f, 0.5f, 1.f);
-      glClear(GL_COLOR_BUFFER_BIT);
+    // glUniform3f(triangle_color, (std::sin(i) + 1) / 2.0f, 0.0f, 0.0f);
+    // glUniform3f(triangle_color, 1.0f, std::sin(i) + 1, std::cos(i));
 
-      shader_program.use();
-      glBindVertexArray(VAO);
-      glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-      glBindVertexArray(0);
+    glClearColor(0.3f, 0.5f, 0.6f, 0.0f);
+    glClear(GL_COLOR_BUFFER_BIT);
 
-      glfwSwapBuffers(window);
-      glfwPollEvents();
-    }
+    glDrawArrays(GL_TRIANGLES, 0, 3);
+    // glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, 0);
+
+    glfwSwapBuffers(window);
+    glfwPollEvents();
   }
 
   glfwTerminate();
