@@ -33,19 +33,19 @@ auto const vertex_shader_source = R"glsl(
   void main()
   {
     out_color = color;
-    gl_Position = vec4(position, 0.0, 1.0);
+    gl_Position = vec4(position.x, -position.y, 0.0, 1.0);
   }
 )glsl";
 
 auto const frag_shader_source = R"glsl(
   #version 410 core
 
-  layout(location = 0) in vec3 color;
+  layout(location = 0) in float color;
 
   out vec4 frag_color;
 
   void main() {
-    frag_color = vec4(color, 0.0f);
+    frag_color = vec4(color, color, color, 0.0f);
   }
 )glsl";
 
@@ -100,55 +100,93 @@ auto main() -> int {
   if(shader_program.param<ProgramAttr::LinkStatus>() != GL_TRUE) {
     fmt::print(stderr, "Shader program linking failed! Log:\n\n{}\n", shader_program.log());
   }
+
   shader_program.use();
 
-  /*
-  auto const indices = std::array {
-    0, 1, 2,
+  auto const attrs_per_vertex = 3;
+  // clang-format off
+  auto const triangle_vertices = std::vector {
+    0.0f,  0.5f, 1.0f, // 0.0f, 0.0f,
+    0.5f, -0.5f, 0.0f, // 1.0f, 0.0f,
+    -0.5f, -0.5f, 0.0f, // 0.0f, 1.0f,
   };
 
-  auto EBO = 0u;
-  glGenBuffers(1, &EBO);
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-  glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(float), indices.data(), GL_STATIC_DRAW); */
-
-  auto VAO = 0u;
-  glGenVertexArrays(1, &VAO);
-  glBindVertexArray(VAO);
-
-  auto const attrs_per_vertex = 5;
-  // clang-format off
-  auto const vertices = std::array {
-    0.0f,  0.5f, 1.0f, 0.0f, 0.0f,
-    0.5f, -0.5f, 0.0f, 1.0f, 0.0f,
-    -0.5f, -0.5f, 0.0f, 0.0f, 1.0f,
+  auto const rectangle_vertices = std::vector {
+    -0.5f,  0.5f, 1.0f, // 0.0f, 0.0f, // Top-left
+     0.5f,  0.5f, 0.0f, // 1.0f, 0.0f, // Top-right
+     0.5f, -0.5f, 0.0f, // 0.0f, 1.0f, // Bottom-right
+    -0.5f, -0.5f, 1.0f, // 1.0f, 1.0f  // Bottom-left
   };
   // clang-format on
+  auto triangleVAO = 0u;
+  glGenVertexArrays(1, &triangleVAO);
 
-  auto VBO = 0u;
-  glGenBuffers(1, &VBO);
-  glBindBuffer(GL_ARRAY_BUFFER, VBO);
-  glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), vertices.data(), GL_STATIC_DRAW);
+  auto rectangleVAO = 0u;
+  glGenVertexArrays(1, &rectangleVAO);
+
+  auto constexpr thing_to_draw = std::string_view("triangle");
+
+  auto triangleVBO = 0u;
+  glGenBuffers(1, &triangleVBO);
+
+  auto rectangleVBO = 0u;
+  glGenBuffers(1, &rectangleVBO);
+
+  auto const& active_vertices = [thing_to_draw, triangleVBO, triangleVAO, &rectangle_vertices, rectangleVAO, rectangleVBO, &triangle_vertices] {
+    if constexpr(thing_to_draw == "triangle") {
+      glBindBuffer(GL_ARRAY_BUFFER, triangleVBO);
+      glBindVertexArray(triangleVAO);
+      return triangle_vertices;
+    }
+
+    glBindBuffer(GL_ARRAY_BUFFER, rectangleVBO);
+    glBindVertexArray(rectangleVAO);
+    return rectangle_vertices;
+  }();
+
+  glBufferData(GL_ARRAY_BUFFER, active_vertices.size() * sizeof(float), active_vertices.data(), GL_STATIC_DRAW);
 
   auto const position_loc = glGetAttribLocation(shader_program.id, "position");
   glVertexAttribPointer(position_loc, 2, GL_FLOAT, GL_FALSE, attrs_per_vertex * sizeof(float), 0);
   glEnableVertexAttribArray(position_loc);
 
   auto const color_loc = glGetAttribLocation(shader_program.id, "color");
-  glVertexAttribPointer(color_loc, 3, GL_FLOAT, GL_FALSE, attrs_per_vertex * sizeof(float), reinterpret_cast<void*>(2 * sizeof(float)));
+  glVertexAttribPointer(color_loc, 1, GL_FLOAT, GL_FALSE, attrs_per_vertex * sizeof(float), reinterpret_cast<void*>(2 * sizeof(float)));
   glEnableVertexAttribArray(color_loc);
 
-  // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+  auto const triangle_indices = std::array {
+    0,
+    1,
+    2,
+  };
+
+  auto const rectangle_indices = std::array {
+    0,
+    1,
+    2,
+    2,
+    3,
+    0
+  };
+
+  auto const& active_indices = [thing_to_draw, &triangle_indices, &rectangle_indices] {
+    if constexpr(thing_to_draw == "triangle")
+      return triangle_indices;
+    else
+      return rectangle_indices;
+  }();
+
+  auto EBO = 0u;
+  glGenBuffers(1, &EBO);
+
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER, active_indices.size() * sizeof(int), active_indices.data(), GL_STATIC_DRAW);
 
   while(not glfwWindowShouldClose(window)) {
-    // glUniform3f(triangle_color, (std::sin(i) + 1) / 2.0f, 0.0f, 0.0f);
-    // glUniform3f(triangle_color, 1.0f, std::sin(i) + 1, std::cos(i));
-
     glClearColor(0.3f, 0.5f, 0.6f, 0.0f);
     glClear(GL_COLOR_BUFFER_BIT);
 
-    glDrawArrays(GL_TRIANGLES, 0, 3);
-    // glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, 0);
+    glDrawElements(GL_TRIANGLES, active_indices.size(), GL_UNSIGNED_INT, 0);
 
     glfwSwapBuffers(window);
     glfwPollEvents();
