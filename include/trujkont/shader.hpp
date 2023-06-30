@@ -5,7 +5,8 @@
 
 #include <glad/glad.h>
 
-enum class ShaderType {
+enum class ShaderType
+{
   Compute = GL_COMPUTE_SHADER,
   Vertex = GL_VERTEX_SHADER,
   TessControl = GL_TESS_CONTROL_SHADER,
@@ -14,7 +15,8 @@ enum class ShaderType {
   Fragment = GL_FRAGMENT_SHADER
 };
 
-enum class ShaderAttr {
+enum class ShaderAttr
+{
   Type = GL_SHADER_TYPE,
   DeleteStatus = GL_DELETE_STATUS,
   CompileStatus = GL_COMPILE_STATUS,
@@ -22,10 +24,12 @@ enum class ShaderAttr {
   ShaderSourceLength = GL_SHADER_SOURCE_LENGTH
 };
 
-class Shader {
+class Shader
+{
 public:
   Shader(ShaderType shader_type, std::string_view const shader_source)
-    : id(glCreateShader(static_cast<GLenum>(shader_type))) {
+    : id(glCreateShader(static_cast<GLenum>(shader_type)))
+  {
     auto const source_ptr = shader_source.data();
 
     glShaderSource(id, 1, &source_ptr, nullptr);
@@ -33,14 +37,16 @@ public:
   }
 
   template<ShaderAttr ShaderAttr>
-  [[nodiscard]] auto param() const -> GLuint {
+  [[nodiscard]] auto param() const -> GLuint
+  {
     auto param = 0;
     glGetShaderiv(id, static_cast<GLenum>(ShaderAttr), &param);
 
     return param;
   }
 
-  [[nodiscard]] auto log() const -> std::string {
+  [[nodiscard]] auto log() const -> std::string
+  {
     auto const log_size = param<ShaderAttr::InfoLogLength>();
     if(log_size == 0) {
       return {};

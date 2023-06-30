@@ -8,7 +8,8 @@
 
 #include <glad/glad.h>
 
-enum class ProgramAttr {
+enum class ProgramAttr
+{
   DeleteStatus = GL_DELETE_STATUS,
   LinkStatus = GL_LINK_STATUS,
   ValidateStatus = GL_VALIDATE_STATUS,
@@ -20,14 +21,16 @@ enum class ProgramAttr {
   ActiveUniformMaxLength = GL_ACTIVE_UNIFORM_MAX_LENGTH
 };
 
-class ShaderProgram {
+class ShaderProgram
+{
 public:
   ShaderProgram()
     : id(glCreateProgram()) {};
 
   template<std::convertible_to<Shader>... Shaders>
   ShaderProgram(Shaders const... shaders)
-    : ShaderProgram() {
+    : ShaderProgram()
+  {
     (glAttachShader(id, shaders.id), ...);
 
     glLinkProgram(id);
@@ -36,14 +39,16 @@ public:
   }
 
   template<ProgramAttr ProgramAttr>
-  [[nodiscard]] auto param() const -> GLuint {
+  [[nodiscard]] auto param() const -> GLuint
+  {
     auto param = 0;
     glGetProgramiv(id, static_cast<GLenum>(ProgramAttr), &param);
 
     return param;
   }
 
-  [[nodiscard]] auto log() const -> std::string {
+  [[nodiscard]] auto log() const -> std::string
+  {
     auto const log_size = param<ProgramAttr::InfoLogLength>();
     if(log_size == 0) {
       return {};
@@ -57,7 +62,8 @@ public:
     return str;
   }
 
-  auto use() const {
+  auto use() const
+  {
     glUseProgram(id);
   }
 

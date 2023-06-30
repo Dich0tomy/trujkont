@@ -15,7 +15,8 @@
 
 // clang-format on
 
-auto enable_debug_info() {
+auto enable_debug_info()
+{
   glfwSetErrorCallback(callbacks::glfw_error_callback);
 
   glEnable(GL_DEBUG_OUTPUT);
@@ -49,7 +50,8 @@ auto const frag_shader_source = R"glsl(
   }
 )glsl";
 
-auto main() -> int {
+auto main() -> int
+{
   fmt::print("GLFW version: '{}'", glfwGetVersionString());
 
   if(not glfwInit()) {
