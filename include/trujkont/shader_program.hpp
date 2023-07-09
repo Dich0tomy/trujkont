@@ -62,6 +62,12 @@ public:
     return str;
   }
 
+  auto set_uniform_2f(std::string_view const name, float const first, float const second)
+  {
+    auto const uniform_loc = glGetUniformLocation(id, name.data());
+    glUniform2f(uniform_loc, first, second);
+  }
+
   auto use() const
   {
     glUseProgram(id);

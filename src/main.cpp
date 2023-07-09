@@ -15,6 +15,8 @@
 
 // clang-format on
 
+#include "stb_image.h"
+
 auto enable_debug_info()
 {
   glfwSetErrorCallback(callbacks::glfw_error_callback);
@@ -24,7 +26,7 @@ auto enable_debug_info()
 }
 
 auto const vertex_shader_source = R"glsl(
-  #version 410 core
+  #version 450 core
 
   in vec2 position;
   in vec3 color;
@@ -33,20 +35,21 @@ auto const vertex_shader_source = R"glsl(
 
   void main()
   {
+    gl_Position = vec4(position, 0.0, 1.0);
     out_color = color;
-    gl_Position = vec4(position.x, -position.y, 0.0, 1.0);
   }
 )glsl";
 
 auto const frag_shader_source = R"glsl(
-  #version 410 core
+  #version 450 core
 
-  layout(location = 0) in float color;
+  layout(location = 0) in vec3 color;
 
   out vec4 frag_color;
 
-  void main() {
-    frag_color = vec4(color, color, color, 0.0f);
+  void main()
+  {
+    frag_color = vec4(color, 1.0f);
   }
 )glsl";
 
@@ -62,7 +65,6 @@ auto main() -> int
   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
   glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-  glfwWindowHint(GLFW_TRANSPARENT_FRAMEBUFFER, GLFW_TRUE);
 
   auto constexpr window_width = 800;
   auto constexpr window_height = 600;
@@ -91,26 +93,30 @@ auto main() -> int
   auto const vertex_shader = Shader(ShaderType::Vertex, vertex_shader_source);
   if(vertex_shader.param<ShaderAttr::CompileStatus>() != GL_TRUE) {
     fmt::print(stderr, "Vertex shader compilation failed! Log:\n\n{}\n", vertex_shader.log());
+    return -1;
   }
 
   auto const frag_shader = Shader(ShaderType::Fragment, frag_shader_source);
   if(frag_shader.param<ShaderAttr::CompileStatus>() != GL_TRUE) {
     fmt::print(stderr, "Fragment shader compilation failed! Log:\n\n{}\n", frag_shader.log());
+    return -1;
   }
 
-  auto const shader_program = ShaderProgram(vertex_shader, frag_shader);
+  auto shader_program = ShaderProgram(vertex_shader, frag_shader);
   if(shader_program.param<ProgramAttr::LinkStatus>() != GL_TRUE) {
     fmt::print(stderr, "Shader program linking failed! Log:\n\n{}\n", shader_program.log());
+    return -1;
   }
 
   shader_program.use();
 
-  auto const attrs_per_vertex = 3;
+  auto const attrs_per_vertex
+    = 5;
   // clang-format off
   auto const triangle_vertices = std::vector {
-    0.0f,  0.5f, 1.0f, // 0.0f, 0.0f,
-    0.5f, -0.5f, 0.0f, // 1.0f, 0.0f,
-    -0.5f, -0.5f, 0.0f, // 0.0f, 1.0f,
+    0.0f,  0.5f, 1.0f,  0.0f, 0.0f,
+    0.5f, -0.5f, 0.0f,  1.0f, 0.0f,
+    -0.5f, -0.5f, 0.0f, 0.0f, 1.0f,
   };
 
   auto const rectangle_vertices = std::vector {
@@ -153,7 +159,7 @@ auto main() -> int
   glEnableVertexAttribArray(position_loc);
 
   auto const color_loc = glGetAttribLocation(shader_program.id, "color");
-  glVertexAttribPointer(color_loc, 1, GL_FLOAT, GL_FALSE, attrs_per_vertex * sizeof(float), reinterpret_cast<void*>(2 * sizeof(float)));
+  glVertexAttribPointer(color_loc, 3, GL_FLOAT, GL_FALSE, attrs_per_vertex * sizeof(float), reinterpret_cast<void*>(2 * sizeof(float)));
   glEnableVertexAttribArray(color_loc);
 
   auto const triangle_indices = std::array {

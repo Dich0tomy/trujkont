@@ -26,7 +26,8 @@ sources = files(
   'src/glad.c',
 
   'src/main.cpp',
-  'src/callbacks.cpp'
+  'src/callbacks.cpp',
+  'src/stb_image.cpp'
 )
 
 executable(
