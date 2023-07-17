@@ -12,6 +12,7 @@ endif
 local_deps = [
   dependency('fmt', required: true),
   dependency('glfw3', required: true),
+  dependency('glm', required: true),
 ]
 
 compilation_options = [
