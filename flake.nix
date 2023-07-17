@@ -39,6 +39,7 @@
             clang-tools_15
             nixgl.auto.nixGLDefault
             pkgconfig
+            mold
 
             #### this project specific
             just
@@ -48,6 +49,7 @@
 
           env = {
             CLANGD_PATH = "${pkgs.clang-tools_15}/bin/clangd";
+            CXX_LD = "mold";
           };
         };
 

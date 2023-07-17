@@ -68,6 +68,12 @@ public:
     glUniform2f(uniform_loc, first, second);
   }
 
+  auto set_uniform_1i(std::string_view const name, int const value)
+  {
+    auto const uniform_loc = glGetUniformLocation(id, name.data());
+    glUniform1i(uniform_loc, value);
+  }
+
   auto use() const
   {
     glUseProgram(id);

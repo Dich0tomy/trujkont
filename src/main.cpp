@@ -26,30 +26,37 @@ auto enable_debug_info()
 }
 
 auto const vertex_shader_source = R"glsl(
-  #version 450 core
+#version 450 core
 
-  in vec2 position;
-  in vec3 color;
+layout (location = 0) in vec3 pos;
+layout (location = 1) in vec3 color;
+layout (location = 2) in vec2 texture_coords;
 
-  layout(location = 0) out vec3 out_color;
+layout (location = 3) out vec3 out_color;
+layout (location = 4) out vec2 out_texture_coords;
 
-  void main()
-  {
-    gl_Position = vec4(position, 0.0, 1.0);
-    out_color = color;
-  }
+void main()
+{
+  gl_Position = vec4(pos, 1.0);
+  out_texture_coords = texture_coords;
+  out_color = color;
+}
 )glsl";
 
 auto const frag_shader_source = R"glsl(
   #version 450 core
 
-  layout(location = 0) in vec3 color;
+  layout(location = 3) in vec3 color;
+  layout(location = 4) in vec2 texture_coords;
 
   out vec4 frag_color;
 
+  uniform sampler2D container_texture;
+  uniform sampler2D face_texture;
+
   void main()
   {
-    frag_color = vec4(color, 1.0f);
+    frag_color = mix(texture(container_texture, texture_coords), texture(face_texture, texture_coords), 0.5) * vec4(color, 1.0f);
   }
 )glsl";
 
@@ -67,7 +74,7 @@ auto main() -> int
   glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
   auto constexpr window_width = 800;
-  auto constexpr window_height = 600;
+  auto constexpr window_height = 800;
 
   auto* const window = glfwCreateWindow(window_width, window_height, "Creatix to kot", nullptr, nullptr);
 
@@ -110,91 +117,107 @@ auto main() -> int
 
   shader_program.use();
 
-  auto const attrs_per_vertex
-    = 5;
   // clang-format off
-  auto const triangle_vertices = std::vector {
-    0.0f,  0.5f, 1.0f,  0.0f, 0.0f,
-    0.5f, -0.5f, 0.0f,  1.0f, 0.0f,
-    -0.5f, -0.5f, 0.0f, 0.0f, 1.0f,
-  };
+  auto const attrs_per_vertex = 8;
 
-  auto const rectangle_vertices = std::vector {
-    -0.5f,  0.5f, 1.0f, // 0.0f, 0.0f, // Top-left
-     0.5f,  0.5f, 0.0f, // 1.0f, 0.0f, // Top-right
-     0.5f, -0.5f, 0.0f, // 0.0f, 1.0f, // Bottom-right
-    -0.5f, -0.5f, 1.0f, // 1.0f, 1.0f  // Bottom-left
+  auto const vertices = std::vector {
+    0.5f,  0.5f, 0.0f,    1.0f, 0.0f, 0.0f,   1.0f, 1.0f, // NOTE: top right
+    0.5f, -0.5f, 0.0f,    0.0f, 1.0f, 0.0f,   1.0f, 0.0f, // bottom right
+    -0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f, // bottom left
+    -0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f, // bottom right
   };
   // clang-format on
+
   auto triangleVAO = 0u;
   glGenVertexArrays(1, &triangleVAO);
 
-  auto rectangleVAO = 0u;
-  glGenVertexArrays(1, &rectangleVAO);
-
-  auto constexpr thing_to_draw = std::string_view("triangle");
-
   auto triangleVBO = 0u;
   glGenBuffers(1, &triangleVBO);
+  glBindBuffer(GL_ARRAY_BUFFER, triangleVBO);
 
-  auto rectangleVBO = 0u;
-  glGenBuffers(1, &rectangleVBO);
+  glBindVertexArray(triangleVAO);
 
-  auto const& active_vertices = [thing_to_draw, triangleVBO, triangleVAO, &rectangle_vertices, rectangleVAO, rectangleVBO, &triangle_vertices] {
-    if constexpr(thing_to_draw == "triangle") {
-      glBindBuffer(GL_ARRAY_BUFFER, triangleVBO);
-      glBindVertexArray(triangleVAO);
-      return triangle_vertices;
-    }
+  glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), vertices.data(), GL_STATIC_DRAW);
 
-    glBindBuffer(GL_ARRAY_BUFFER, rectangleVBO);
-    glBindVertexArray(rectangleVAO);
-    return rectangle_vertices;
-  }();
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, attrs_per_vertex * sizeof(float), reinterpret_cast<void*>(0));
+  glEnableVertexAttribArray(0);
 
-  glBufferData(GL_ARRAY_BUFFER, active_vertices.size() * sizeof(float), active_vertices.data(), GL_STATIC_DRAW);
+  glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, attrs_per_vertex * sizeof(float), reinterpret_cast<void*>(3 * sizeof(float)));
+  glEnableVertexAttribArray(1);
 
-  auto const position_loc = glGetAttribLocation(shader_program.id, "position");
-  glVertexAttribPointer(position_loc, 2, GL_FLOAT, GL_FALSE, attrs_per_vertex * sizeof(float), 0);
-  glEnableVertexAttribArray(position_loc);
+  glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, attrs_per_vertex * sizeof(float), reinterpret_cast<void*>(6 * sizeof(float)));
+  glEnableVertexAttribArray(2);
 
-  auto const color_loc = glGetAttribLocation(shader_program.id, "color");
-  glVertexAttribPointer(color_loc, 3, GL_FLOAT, GL_FALSE, attrs_per_vertex * sizeof(float), reinterpret_cast<void*>(2 * sizeof(float)));
-  glEnableVertexAttribArray(color_loc);
-
-  auto const triangle_indices = std::array {
-    0,
-    1,
-    2,
+  // clang-format off
+  auto const indices = std::array {
+    0, 1, 3,
+    1, 2, 3
   };
-
-  auto const rectangle_indices = std::array {
-    0,
-    1,
-    2,
-    2,
-    3,
-    0
-  };
-
-  auto const& active_indices = [thing_to_draw, &triangle_indices, &rectangle_indices] {
-    if constexpr(thing_to_draw == "triangle")
-      return triangle_indices;
-    else
-      return rectangle_indices;
-  }();
+  // clang-format on
 
   auto EBO = 0u;
   glGenBuffers(1, &EBO);
 
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-  glBufferData(GL_ELEMENT_ARRAY_BUFFER, active_indices.size() * sizeof(int), active_indices.data(), GL_STATIC_DRAW);
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(int), indices.data(), GL_STATIC_DRAW);
+
+  stbi_set_flip_vertically_on_load(true);
+  {
+    auto width = 0;
+    auto height = 0;
+    auto nr_of_channels = 0;
+    auto const data = stbi_load("assets/container.jpg", &width, &height, &nr_of_channels, 0);
+
+    if(not data) {
+      fmt::print(stderr, "Whoops cannot load texture.");
+      return -2;
+    }
+
+    auto texture = 0u;
+    glGenTextures(1, &texture);
+
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, texture);
+
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+    glGenerateMipmap(GL_TEXTURE_2D);
+
+    stbi_image_free(data);
+  }
+
+  {
+    auto width = 0;
+    auto height = 0;
+    auto nr_of_channels = 0;
+
+    auto const data = stbi_load("assets/awesomeface.png", &width, &height, &nr_of_channels, 0);
+
+    if(not data) {
+      fmt::print(stderr, "Whoops cannot load texture.");
+      return -2;
+    }
+
+    auto texture = 0u;
+    glGenTextures(1, &texture);
+
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_2D, texture);
+
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+    glGenerateMipmap(GL_TEXTURE_2D);
+
+    stbi_image_free(data);
+  }
+
+  shader_program.set_uniform_1i("container_texture", 0);
+  shader_program.set_uniform_1i("face_texture", 1);
 
   while(not glfwWindowShouldClose(window)) {
     glClearColor(0.3f, 0.5f, 0.6f, 0.0f);
     glClear(GL_COLOR_BUFFER_BIT);
 
-    glDrawElements(GL_TRIANGLES, active_indices.size(), GL_UNSIGNED_INT, 0);
+    glBindVertexArray(triangleVAO);
+    glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
 
     glfwSwapBuffers(window);
     glfwPollEvents();
