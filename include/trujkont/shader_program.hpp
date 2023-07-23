@@ -8,6 +8,9 @@
 
 #include <glad/glad.h>
 
+#include <glm/glm.hpp>
+#include <glm/gtc/type_ptr.hpp>
+
 enum class ProgramAttr
 {
   DeleteStatus = GL_DELETE_STATUS,
@@ -72,6 +75,12 @@ public:
   {
     auto const uniform_loc = glGetUniformLocation(id, name.data());
     glUniform1i(uniform_loc, value);
+  }
+
+  auto set_uniform_4mat(std::string_view const name, glm::mat4 mat)
+  {
+    auto const uniform_loc = glGetUniformLocation(id, name.data());
+    glUniformMatrix4fv(uniform_loc, 1, GL_FALSE, glm::value_ptr(mat));
   }
 
   auto use() const
