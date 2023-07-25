@@ -32,13 +32,16 @@ inline void mouse_move_callback(GLFWwindow* const window, double const pos_x, do
   last_x = pos_x;
   last_y = pos_y;
 
-  float const sensitivity = 0.1f;
+  float const sensitivity = .05f;
   delta_x *= sensitivity;
   delta_y *= sensitivity;
 
   yaw += delta_x;
   pitch = glm::clamp(pitch + delta_y, -89.0f, 89.0f);
 }
+
+// Image Mark
+// [:https://learnopengl.com/img/getting-started/camera_axes.png dimensions 500 500 offset 5 2 show_always pad:]
 
 class Camera
 {
@@ -88,10 +91,7 @@ public:
       position += glm::normalize(glm::cross(reverse_direction, up_vector)) * camera_speed;
 
     if(glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS)
-      speed = glm::clamp(speed + 0.1f, 0.1f, 1.0f);
-
-    if(glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS)
-      speed = glm::clamp(speed - 0.1f, 0.1f, 1.0f);
+      glfwSetWindowShouldClose(window, true);
 
     if(glfwGetKey(window, GLFW_KEY_O) == GLFW_PRESS)
       orthogonal = not orthogonal;
@@ -112,13 +112,14 @@ public:
 
   auto right() {}
 */
+  glm::vec3 position = glm::vec3(0.);
+
 private:
   GLFWwindow* window;
 
   float speed = 0.5;
   bool orthogonal = false;
 
-  glm::vec3 position = glm::vec3(0.);
   glm::vec3 reverse_direction = glm::vec3(0., 0., -1.);
   glm::vec3 up_vector = glm::vec3(0., 1., 0.);
 };

@@ -5,21 +5,23 @@
 #include <chrono>
 #include <array>
 
-#include <trujkont/callbacks.hpp>
-#include <trujkont/shader.hpp>
 #include <trujkont/shader_program.hpp>
+#include <trujkont/callbacks.hpp>
+#include <trujkont/billboard.hpp>
+#include <trujkont/texture.hpp>
+#include <trujkont/shader.hpp>
 #include <trujkont/camera.hpp>
 
 #include <fmt/format.h>
 
 // clang-format off
-#include <glad/glad.h>
 #include <GLFW/glfw3.h>
+#include <glad/glad.h>
 
 // clang-format on
-#include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include <glm/glm.hpp>
 
 #include "stb_image.h"
 
@@ -76,7 +78,7 @@ auto const frag_shader_source = R"glsl(
 
 auto main() -> int
 {
-  fmt::print("GLFW version: '{}'", glfwGetVersionString());
+  fmt::print("GLFW version: '{}'\n", glfwGetVersionString());
 
   if(not glfwInit()) {
     fmt::print(stderr, "GLFW init error\n");
@@ -122,8 +124,8 @@ auto main() -> int
     fmt::print(stderr, "Fragment shader compilation failed! Log:\n\n{}\n", frag_shader.log());
     return -1;
   }
-
   auto shader_program = ShaderProgram(vertex_shader, frag_shader);
+
   if(shader_program.param<ProgramAttr::LinkStatus>() != GL_TRUE) {
     fmt::print(stderr, "Shader program linking failed! Log:\n\n{}\n", shader_program.log());
     return -1;
@@ -186,16 +188,18 @@ auto main() -> int
   }; */
   // clang-format on
 
+  stbi_set_flip_vertically_on_load(true);
+
   glEnable(GL_DEPTH_TEST);
 
-  auto triangleVAO = 0u;
-  glGenVertexArrays(1, &triangleVAO);
+  auto VAO = 0u;
+  glGenVertexArrays(1, &VAO);
 
-  auto triangleVBO = 0u;
-  glGenBuffers(1, &triangleVBO);
-  glBindBuffer(GL_ARRAY_BUFFER, triangleVBO);
+  auto VBO = 0u;
+  glGenBuffers(1, &VBO);
+  glBindBuffer(GL_ARRAY_BUFFER, VBO);
 
-  glBindVertexArray(triangleVAO);
+  glBindVertexArray(VAO);
 
   glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), vertices.data(), GL_STATIC_DRAW);
 
@@ -221,55 +225,8 @@ auto main() -> int
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
   glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(int), indices.data(), GL_STATIC_DRAW);
 
-  stbi_set_flip_vertically_on_load(true);
-  {
-    auto width = 0;
-    auto height = 0;
-    auto nr_of_channels = 0;
-    auto const data = stbi_load("assets/babushka.png", &width, &height, &nr_of_channels, 0);
-
-    if(not data) {
-      fmt::print(stderr, "Whoops cannot load texture.");
-      return -2;
-    }
-
-    auto texture = 0u;
-    glGenTextures(1, &texture);
-
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, texture);
-
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
-    glGenerateMipmap(GL_TEXTURE_2D);
-
-    stbi_image_free(data);
-  }
-
-  {
-    auto width = 0;
-    auto height = 0;
-    auto nr_of_channels = 0;
-
-    auto const data = stbi_load("assets/awesomeface.png", &width, &height, &nr_of_channels, 0);
-
-    if(not data) {
-      fmt::print(stderr, "Whoops cannot load texture.");
-      return -2;
-    }
-
-    auto texture = 0u;
-    glGenTextures(1, &texture);
-
-    glActiveTexture(GL_TEXTURE1);
-    glBindTexture(GL_TEXTURE_2D, texture);
-
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
-    glGenerateMipmap(GL_TEXTURE_2D);
-
-    stbi_image_free(data);
-  }
-
-  shader_program.set_uniform_1i("container_texture", 0);
+  auto babushka_texture = Texture("assets/babushka.png");
+  shader_program.set_uniform_1i("container_texture", babushka_texture.get_slot());
   // shader_program.set_uniform_1i("face_texture", 1);
 
   // fmt::print("X: {} Y: {} Z: {}", vec.x, vec.y, vec.z);
@@ -283,7 +240,7 @@ auto main() -> int
   auto distribution = std::uniform_int_distribution(0, 1);
 
   auto const cube_positions = std::array {
-    glm::vec3(0.0f, 0.0f, -0.5f),
+    glm::vec3(1.0f, 3.0f, -5.5f),
     glm::vec3(2.0f, 5.0f, -15.0f),
     glm::vec3(-1.5f, -2.2f, -2.5f),
     glm::vec3(-3.8f, -2.0f, -12.3f),
@@ -296,11 +253,17 @@ auto main() -> int
   };
 
   auto camera = Camera(window);
+
+  auto const awesomeface_texture = Texture("assets/awesomeface.png", TextureFormat::RGBA);
+  auto face_billboard = Billboard(awesomeface_texture, glm::vec3(0.));
+
   while(not glfwWindowShouldClose(window)) {
+    shader_program.use();
+
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    glBindVertexArray(triangleVAO);
+    glBindVertexArray(VAO);
     // glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
 
     auto cubes = 10;
@@ -318,6 +281,8 @@ auto main() -> int
     auto const now = Clock::now();
     delta_time = std::chrono::duration_cast<std::chrono::seconds>(now - last_frame_time).count();
 
+    face_billboard.update(camera.position);
+
     /*
     auto const time_diff_count = static_cast<float>(time_diff.count());
     auto trans = glm::mat4(1.0f);
@@ -332,10 +297,9 @@ auto main() -> int
     trans = glm::rotate(trans, time_diff_count / 600, glm::vec3(0.0, 1.0, 0.0));
     trans = glm::rotate(trans, time_diff_count / 800, glm::vec3(0.0, 0.0, 1.0)); */
 
-    fmt::print("Delta time: {}\n", delta_time);
-
     auto const [view, projection] = camera.update(delta_time, static_cast<float>(window_width) / window_height);
 
+    shader_program.use();
     shader_program.set_uniform_4mat("view", view);
     shader_program.set_uniform_4mat("projection", projection);
 

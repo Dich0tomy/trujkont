@@ -28,7 +28,9 @@ sources = files(
 
   'src/main.cpp',
   'src/callbacks.cpp',
-  'src/stb_image.cpp'
+  'src/stb_image.cpp',
+  'src/texture.cpp',
+  'src/billboard.cpp'
 )
 
 executable(
