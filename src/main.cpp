@@ -67,12 +67,11 @@ auto const frag_shader_source = R"glsl(
 
   out vec4 frag_color;
 
-  uniform sampler2D container_texture;
   uniform sampler2D face_texture;
 
   void main()
   {
-    frag_color = texture(container_texture, texture_coords);
+    frag_color = texture(face_texture, texture_coords);
   }
 )glsl";
 
@@ -189,8 +188,9 @@ auto main() -> int
   // clang-format on
 
   stbi_set_flip_vertically_on_load(true);
-
   glEnable(GL_DEPTH_TEST);
+  glEnable(GL_BLEND);
+  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
   auto VAO = 0u;
   glGenVertexArrays(1, &VAO);
@@ -225,8 +225,8 @@ auto main() -> int
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
   glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(int), indices.data(), GL_STATIC_DRAW);
 
-  auto babushka_texture = Texture("assets/babushka.png");
-  shader_program.set_uniform_1i("container_texture", babushka_texture.get_slot());
+  auto babushka_texture = Texture("assets/awesomeface.png", TextureFormat::RGBA);
+  shader_program.set_uniform_1i("face_texture", babushka_texture.get_slot());
   // shader_program.set_uniform_1i("face_texture", 1);
 
   // fmt::print("X: {} Y: {} Z: {}", vec.x, vec.y, vec.z);
@@ -254,13 +254,13 @@ auto main() -> int
 
   auto camera = Camera(window);
 
-  auto const awesomeface_texture = Texture("assets/awesomeface.png", TextureFormat::RGBA);
+  auto const awesomeface_texture = Texture("assets/babushka.png", TextureFormat::RGB);
   auto face_billboard = Billboard(awesomeface_texture, glm::vec3(0.));
 
   while(not glfwWindowShouldClose(window)) {
     shader_program.use();
 
-    glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+    glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     glBindVertexArray(VAO);
@@ -281,23 +281,9 @@ auto main() -> int
     auto const now = Clock::now();
     delta_time = std::chrono::duration_cast<std::chrono::seconds>(now - last_frame_time).count();
 
-    face_billboard.update(camera.position);
-
-    /*
-    auto const time_diff_count = static_cast<float>(time_diff.count());
-    auto trans = glm::mat4(1.0f);
-    trans = glm::scale(trans, glm::vec3(0.5, 0.5, 0.0));
-    auto const rotation = previous_rotation + std::sin(time_diff_count / 500) * 5;
-    previous_rotation = rotation;
-    trans = glm::rotate(trans, glm::radians(rotation), glm::vec3(0.0, 0.0, 1.0f));
-
-    trans = glm::translate(trans, glm::vec3(0.5f, -0.5f, 0.0f));
-
-    trans = glm::rotate(trans, time_diff_count / 400, glm::vec3(1.0, 0.0, 0.0));
-    trans = glm::rotate(trans, time_diff_count / 600, glm::vec3(0.0, 1.0, 0.0));
-    trans = glm::rotate(trans, time_diff_count / 800, glm::vec3(0.0, 0.0, 1.0)); */
-
     auto const [view, projection] = camera.update(delta_time, static_cast<float>(window_width) / window_height);
+
+    face_billboard.update(camera.position, view, projection);
 
     shader_program.use();
     shader_program.set_uniform_4mat("view", view);

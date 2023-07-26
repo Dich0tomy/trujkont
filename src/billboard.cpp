@@ -66,7 +66,6 @@ Billboard::Billboard(Texture const texture, glm::vec3 position)
     throw std::runtime_error("Cannot compile billboard shader program!");
   }
 
-  billboard_shader_program.use();
   billboard_shader_program.set_uniform_1i("billboard_texture", texture.get_slot());
 
   VAO = 0u;
@@ -93,9 +92,9 @@ Billboard::Billboard(Texture const texture, glm::vec3 position)
   glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(int), indices.data(), GL_STATIC_DRAW);
 }
 
-auto Billboard::update(glm::vec3 const& camera_position) -> void
+auto Billboard::update(glm::vec3 const& camera_position, glm::mat4 const& camera_view, glm::mat4 const& camera_projection) -> void
 {
-  auto direction_from_camera = position - camera_position;
+  /* auto direction_from_camera = position - camera_position;
 
   if(direction_from_camera.length() <= 0) return;
 
@@ -105,13 +104,17 @@ auto Billboard::update(glm::vec3 const& camera_position) -> void
   auto z_angle = glm::atan(direction_from_camera.z, distance_2d);
 
   model = glm::mat4(1.f);
-  model = glm::translate(model, camera_position);
-  model = model * glm::eulerAngleXYZ(0.f, z_angle, billboard_camera_angle);
+  model = model * glm::eulerAngleXYZ(0.f, z_angle, billboard_camera_angle); */
 
-  billboard_shader_program.use();
+  model
+    = glm::mat4(1.f);
+  model = glm::translate(model, camera_position);
+  model = glm::scale(glm::mat4(1.), glm::vec3(1));
+
   billboard_shader_program.set_uniform_4mat("model", model);
+  billboard_shader_program.set_uniform_4mat("view", camera_view);
+  billboard_shader_program.set_uniform_4mat("projection", camera_projection);
 
   glBindVertexArray(VAO);
-  // glDrawArrays(GL_TRIANGLES, 0, vertices.size());
   glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
 }

@@ -76,7 +76,7 @@ public:
 
   auto process_input(long long delta_time) -> void
   {
-    auto const camera_speed = speed * static_cast<float>(delta_time) / 5'000;
+    auto const camera_speed = speed * static_cast<float>(delta_time) / 10'000;
 
     if(glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
       position += (camera_speed * reverse_direction);

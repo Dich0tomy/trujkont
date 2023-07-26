@@ -68,22 +68,28 @@ public:
   auto set_uniform_2f(std::string_view const name, float const first, float const second)
   {
     auto const uniform_loc = glGetUniformLocation(id, name.data());
+
+    use();
     glUniform2f(uniform_loc, first, second);
   }
 
   auto set_uniform_1i(std::string_view const name, int const value)
   {
     auto const uniform_loc = glGetUniformLocation(id, name.data());
+
+    use();
     glUniform1i(uniform_loc, value);
   }
 
   auto set_uniform_4mat(std::string_view const name, glm::mat4 mat)
   {
     auto const uniform_loc = glGetUniformLocation(id, name.data());
+
+    use();
     glUniformMatrix4fv(uniform_loc, 1, GL_FALSE, glm::value_ptr(mat));
   }
 
-  auto use() const
+  auto use() const -> void
   {
     glUseProgram(id);
   }
