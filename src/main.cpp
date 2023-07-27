@@ -255,7 +255,7 @@ auto main() -> int
   auto camera = Camera(window);
 
   auto const awesomeface_texture = Texture("assets/babushka.png", TextureFormat::RGB);
-  auto face_billboard = Billboard(awesomeface_texture, glm::vec3(0.));
+  auto face_billboard = Billboard(awesomeface_texture, glm::vec3(1.0, 1.0, -5.0));
 
   while(not glfwWindowShouldClose(window)) {
     shader_program.use();

@@ -30,7 +30,9 @@ sources = files(
   'src/callbacks.cpp',
   'src/stb_image.cpp',
   'src/texture.cpp',
-  'src/billboard.cpp'
+  'src/billboard.cpp',
+  'src/camera.cpp',
+  'src/quad.cpp'
 )
 
 executable(
