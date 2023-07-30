@@ -11,7 +11,7 @@ bool process_user_input = false;
 auto last_x = 400.f;
 auto last_y = 300.f;
 
-void mouse_click_callback(GLFWwindow* window, int button, int action, int mods)
+void mouse_click_callback(GLFWwindow* window, int button, int action, [[maybe_unused]] int mods)
 {
   if(button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
@@ -19,7 +19,7 @@ void mouse_click_callback(GLFWwindow* window, int button, int action, int mods)
   }
 }
 
-void mouse_move_callback(GLFWwindow* const window, double const pos_x, double const pos_y)
+void mouse_move_callback([[maybe_unused]] GLFWwindow* const window, double const pos_x, double const pos_y)
 {
   if(not process_user_input) return;
 
