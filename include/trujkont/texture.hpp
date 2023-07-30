@@ -26,7 +26,7 @@ class Texture
 {
 public:
   Texture(TextureFormat const format = TextureFormat::RGB) noexcept;
-  Texture(std::filesystem::path const texture_path, TextureFormat const format = TextureFormat::RGB);
+  Texture(std::filesystem::path const& texture_path, TextureFormat const format = TextureFormat::RGB);
 
   auto get_slot() const noexcept -> unsigned;
 

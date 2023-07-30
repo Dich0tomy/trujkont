@@ -7,9 +7,6 @@
 
 struct GLFWwindow;
 
-// Image Mark
-// [:https://learnopengl.com/img/getting-started/camera_axes.png dimensions 500 500 offset 5 2 show_always pad:]
-
 class Camera
 {
 public:

@@ -16,7 +16,7 @@ Texture::Texture(TextureFormat const format) noexcept
   current_slot_nr++;
 }
 
-Texture::Texture(std::filesystem::path const texture_path, TextureFormat const format)
+Texture::Texture(std::filesystem::path const& texture_path, TextureFormat const format)
   : Texture(format)
 {
   auto const data = stbi_load(
