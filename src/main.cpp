@@ -235,10 +235,6 @@ auto main() -> int
   auto delta_time = Clock::duration::rep();
   auto last_frame_time = Clock::time_point();
 
-  auto device = std::random_device();
-  auto generator = std::mt19937();
-  auto distribution = std::uniform_int_distribution(0, 1);
-
   auto const cube_positions = std::array {
     glm::vec3(1.0f, 3.0f, -5.5f),
     glm::vec3(2.0f, 5.0f, -15.0f),
