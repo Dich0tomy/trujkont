@@ -1,4 +1,12 @@
 version = 1
 
+exclude_patterns = [
+  "src/glad.c",
+  "src/stb_image.cpp",
+  "include/glad/*",
+  "include/KHR/*",
+  "include/stb_image.h"
+]
+
 [[analyzers]]
 name = "cxx"
