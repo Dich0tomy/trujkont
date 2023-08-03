@@ -70,7 +70,7 @@ auto Camera::process_input(long long delta_time) -> void
 {
   if(not process_user_input) return;
 
-  auto const camera_speed = speed * static_cast<float>(delta_time) / 10'000;
+  auto const camera_speed = speed * static_cast<float>(delta_time) / 1'000;
 
   if(glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
     position += (camera_speed * reverse_direction);

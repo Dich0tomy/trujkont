@@ -70,29 +70,35 @@ Billboard::Billboard(Texture const texture, glm::vec3 position)
   billboard_shader_program.set_uniform_1i("billboard_texture", texture.get_slot());
 }
 
-auto prev = glm::vec3(0.0);
+auto print_matrix(glm::mat4 const& mat)
+{
+  fmt::print("╭ {:15} {:15} {:15} {:15} ╮\n", mat[0][0], mat[1][0], mat[2][0], mat[3][0]);
+  fmt::print("│ {:15} {:15} {:15} {:15} │\n", mat[0][1], mat[1][1], mat[2][1], mat[3][1]);
+  fmt::print("│ {:15} {:15} {:15} {:15} │\n", mat[0][2], mat[1][2], mat[2][2], mat[3][2]);
+  fmt::print("╰ {:15} {:15} {:15} {:15} ╯\n", mat[0][3], mat[1][3], mat[2][3], mat[3][3]);
+  fmt::print("\n\n\n");
+}
 
 auto Billboard::update(glm::vec3 const& camera_position, glm::mat4 const& camera_view, glm::mat4 const& camera_projection) -> void
 {
-  auto const dfc = position - camera_position;
-
-  if(prev != dfc)
-    fmt::print("x {:8}\ty {:8}\tz {:8}\n", dfc.x, dfc.y, dfc.z);
-
-  prev = dfc;
-
-  // the angle is in a 2d space with z and x coordinates
-  auto const angle_2d_z_x = glm::atan(dfc.x, dfc.z);
-
-  auto const d = glm::sqrt(dfc.z * dfc.z + dfc.x * dfc.x);
-  auto angle_2d_y_z = glm::atan(dfc.y, d);
-
   model = glm::mat4(1.f);
   model = glm::translate(model, position);
-  model = model
-          * glm::eulerAngleXYZ(0.0f, angle_2d_z_x, 0.0f)
-          * glm::eulerAngleXYZ(-angle_2d_y_z, 0.0f, 0.0f);
 
+  auto no_rotation_model_view_matrix = (camera_view * model);
+
+  no_rotation_model_view_matrix[0][0] = 1;
+  no_rotation_model_view_matrix[0][1] = 0;
+  no_rotation_model_view_matrix[0][2] = 0;
+
+  no_rotation_model_view_matrix[1][0] = 0;
+  no_rotation_model_view_matrix[1][1] = 1;
+  no_rotation_model_view_matrix[1][2] = 0;
+
+  no_rotation_model_view_matrix[2][0] = 0;
+  no_rotation_model_view_matrix[2][1] = 0;
+  no_rotation_model_view_matrix[2][2] = 1;
+
+  billboard_shader_program.set_uniform_4mat("no_rotation_model_view_mat", no_rotation_model_view_matrix);
   billboard_shader_program.set_uniform_4mat("model", model);
   billboard_shader_program.set_uniform_4mat("view", camera_view);
   billboard_shader_program.set_uniform_4mat("projection", camera_projection);
