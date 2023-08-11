@@ -275,7 +275,8 @@ auto main() -> int
     }
 
     auto const now = Clock::now();
-    delta_time = std::chrono::duration_cast<std::chrono::seconds>(now - last_frame_time).count();
+    delta_time = std::chrono::duration_cast<std::chrono::milliseconds>(now - last_frame_time).count();
+    last_frame_time = now;
 
     auto const [view, projection] = camera.update(delta_time, static_cast<float>(window_width) / window_height);
 
