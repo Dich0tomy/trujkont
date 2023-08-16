@@ -59,7 +59,7 @@ sources = files(
 )
 
 executable(
-  'turjnoknt',
+  'trujkont',
   sources,
   dependencies: local_deps,
   include_directories: include_dirs,
