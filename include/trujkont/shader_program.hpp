@@ -65,7 +65,7 @@ public:
     return str;
   }
 
-  auto set_uniform_2f(std::string_view const name, float const first, float const second)
+  auto set_uniform_2f(std::string_view const name, float const first, float const second) const
   {
     auto const uniform_loc = glGetUniformLocation(id, name.data());
 
@@ -73,7 +73,7 @@ public:
     glUniform2f(uniform_loc, first, second);
   }
 
-  auto set_uniform_1i(std::string_view const name, int const value)
+  auto set_uniform_1i(std::string_view const name, int const value) const
   {
     auto const uniform_loc = glGetUniformLocation(id, name.data());
 
@@ -81,7 +81,15 @@ public:
     glUniform1i(uniform_loc, value);
   }
 
-  auto set_uniform_4mat(std::string_view const name, glm::mat4 mat)
+  auto set_uniform_1ui(std::string_view const name, unsigned int const value) const
+  {
+    auto const uniform_loc = glGetUniformLocation(id, name.data());
+
+    use();
+    glUniform1ui(uniform_loc, value);
+  }
+
+  auto set_uniform_4mat(std::string_view const name, glm::mat4 mat) const
   {
     auto const uniform_loc = glGetUniformLocation(id, name.data());
 

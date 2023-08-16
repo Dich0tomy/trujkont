@@ -81,7 +81,7 @@ auto main() -> int
 {
   fmt::print("GLFW version: '{}'\n", glfwGetVersionString());
 
-  if(not glfwInit()) {
+  if(glfwInit() == 0) {
     fmt::print(stderr, "GLFW init error\n");
     return -1;
   }
@@ -138,47 +138,47 @@ auto main() -> int
   auto const attrs_per_vertex = 5;
 
   auto const vertices = std::array {
-      -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
-      0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
-      0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-      0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-      -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
-      -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+      -0.5F, -0.5F, -0.5F,  0.0F, 0.0F,
+      0.5F, -0.5F, -0.5F,  1.0F, 0.0F,
+      0.5F,  0.5F, -0.5F,  1.0F, 1.0F,
+      0.5F,  0.5F, -0.5F,  1.0F, 1.0F,
+      -0.5F,  0.5F, -0.5F,  0.0F, 1.0F,
+      -0.5F, -0.5F, -0.5F,  0.0F, 0.0F,
 
-      -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-      0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-      0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
-      0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
-      -0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
-      -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+      -0.5F, -0.5F,  0.5F,  0.0F, 0.0F,
+      0.5F, -0.5F,  0.5F,  1.0F, 0.0F,
+      0.5F,  0.5F,  0.5F,  1.0F, 1.0F,
+      0.5F,  0.5F,  0.5F,  1.0F, 1.0F,
+      -0.5F,  0.5F,  0.5F,  0.0F, 1.0F,
+      -0.5F, -0.5F,  0.5F,  0.0F, 0.0F,
 
-      -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-      -0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-      -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-      -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-      -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-      -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+      -0.5F,  0.5F,  0.5F,  1.0F, 0.0F,
+      -0.5F,  0.5F, -0.5F,  1.0F, 1.0F,
+      -0.5F, -0.5F, -0.5F,  0.0F, 1.0F,
+      -0.5F, -0.5F, -0.5F,  0.0F, 1.0F,
+      -0.5F, -0.5F,  0.5F,  0.0F, 0.0F,
+      -0.5F,  0.5F,  0.5F,  1.0F, 0.0F,
 
-      0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-      0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-      0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-      0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-      0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-      0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+      0.5F,  0.5F,  0.5F,  1.0F, 0.0F,
+      0.5F,  0.5F, -0.5F,  1.0F, 1.0F,
+      0.5F, -0.5F, -0.5F,  0.0F, 1.0F,
+      0.5F, -0.5F, -0.5F,  0.0F, 1.0F,
+      0.5F, -0.5F,  0.5F,  0.0F, 0.0F,
+      0.5F,  0.5F,  0.5F,  1.0F, 0.0F,
 
-      -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-      0.5f, -0.5f, -0.5f,  1.0f, 1.0f,
-      0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-      0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-      -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-      -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+      -0.5F, -0.5F, -0.5F,  0.0F, 1.0F,
+      0.5F, -0.5F, -0.5F,  1.0F, 1.0F,
+      0.5F, -0.5F,  0.5F,  1.0F, 0.0F,
+      0.5F, -0.5F,  0.5F,  1.0F, 0.0F,
+      -0.5F, -0.5F,  0.5F,  0.0F, 0.0F,
+      -0.5F, -0.5F, -0.5F,  0.0F, 1.0F,
 
-      -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
-      0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-      0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-      0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-      -0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
-      -0.5f,  0.5f, -0.5f,  0.0f, 1.0f
+      -0.5F,  0.5F, -0.5F,  0.0F, 1.0F,
+      0.5F,  0.5F, -0.5F,  1.0F, 1.0F,
+      0.5F,  0.5F,  0.5F,  1.0F, 0.0F,
+      0.5F,  0.5F,  0.5F,  1.0F, 0.0F,
+      -0.5F,  0.5F,  0.5F,  0.0F, 0.0F,
+      -0.5F,  0.5F, -0.5F,  0.0F, 1.0F
   };
 
   /* auto const vertices = std::vector {
@@ -194,10 +194,10 @@ auto main() -> int
   glEnable(GL_BLEND);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-  auto VAO = 0u;
+  auto VAO = 0U;
   glGenVertexArrays(1, &VAO);
 
-  auto VBO = 0u;
+  auto VBO = 0U;
   glGenBuffers(1, &VBO);
   glBindBuffer(GL_ARRAY_BUFFER, VBO);
 
@@ -205,9 +205,11 @@ auto main() -> int
 
   glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), vertices.data(), GL_STATIC_DRAW);
 
-  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, attrs_per_vertex * sizeof(float), reinterpret_cast<void*>(0));
+  // NOLINTNEXTLINE
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, attrs_per_vertex * sizeof(float), static_cast<void*>(0));
   glEnableVertexAttribArray(0);
 
+  // NOLINTNEXTLINE
   glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, attrs_per_vertex * sizeof(float), reinterpret_cast<void*>(3 * sizeof(float)));
   glEnableVertexAttribArray(1);
 
@@ -221,28 +223,28 @@ auto main() -> int
   };
   // clang-format on
 
-  auto EBO = 0u;
+  auto EBO = 0U;
   glGenBuffers(1, &EBO);
 
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
   glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(int), indices.data(), GL_STATIC_DRAW);
 
   auto face_texture = Texture("assets/babushka.png", TextureFormat::RGB);
-  shader_program.set_uniform_1i("face_texture", face_texture.get_slot());
+  shader_program.set_uniform_1ui("face_texture", face_texture.get_slot());
 
   auto delta_time = DeltaTime();
 
   auto const cube_positions = std::array {
-    glm::vec3(1.0f, 3.0f, -5.5f),
-    glm::vec3(2.0f, 5.0f, -15.0f),
-    glm::vec3(-1.5f, -2.2f, -2.5f),
-    glm::vec3(-3.8f, -2.0f, -12.3f),
-    glm::vec3(2.4f, -0.4f, -3.5f),
-    glm::vec3(-1.7f, 3.0f, -7.5f),
-    glm::vec3(1.3f, -2.0f, -2.5f),
-    glm::vec3(1.5f, 2.0f, -2.5f),
-    glm::vec3(1.5f, 0.2f, -1.5f),
-    glm::vec3(-1.3f, 1.0f, -1.5f)
+    glm::vec3(1.0F, 3.0F, -5.5F),
+    glm::vec3(2.0F, 5.0F, -15.0F),
+    glm::vec3(-1.5F, -2.2F, -2.5F),
+    glm::vec3(-3.8F, -2.0F, -12.3F),
+    glm::vec3(2.4F, -0.4F, -3.5F),
+    glm::vec3(-1.7F, 3.0F, -7.5F),
+    glm::vec3(1.3F, -2.0F, -2.5F),
+    glm::vec3(1.5F, 2.0F, -2.5F),
+    glm::vec3(1.5F, 0.2F, -1.5F),
+    glm::vec3(-1.3F, 1.0F, -1.5F)
   };
 
   auto camera = Camera(window);
@@ -252,27 +254,27 @@ auto main() -> int
 
   auto commandline = Commandline();
 
-  commandline.add_command("help", [](Commandline::CommandArgs args) -> Commandline::CommandResult {
+  commandline.add_command("help", []([[maybe_unused]] Commandline::CommandArgs args) -> Commandline::CommandResult {
     return "Twoja stara zrogowaciala siadala na butli od vanisha";
   });
 
   auto commandline_thread = std::jthread(&Commandline::run, commandline);
 
-  while(not glfwWindowShouldClose(window)) {
+  while(glfwWindowShouldClose(window) == 0) {
     shader_program.use();
 
-    glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+    glClearColor(0.1F, 0.1F, 0.1F, 1.0F);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     glBindVertexArray(VAO);
     // glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
 
-    auto cubes = 10;
+    auto constexpr cubes = 10;
     for(auto i = 1; i <= cubes; ++i) {
-      auto model = glm::mat4(1.0f);
+      auto model = glm::mat4(1.0F);
       model = glm::translate(model, cube_positions[i - 1]);
 
-      model = glm::rotate(model, i * (float)glfwGetTime() * glm::radians(25.0f), glm::vec3(0.5f, 1.0f, 0.0f));
+      model = glm::rotate(model, static_cast<float>(i) * (float)glfwGetTime() * glm::radians(25.0F), glm::vec3(0.5F, 1.0F, 0.0F));
 
       shader_program.set_uniform_4mat("model", model);
 
