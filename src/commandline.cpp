@@ -29,7 +29,7 @@ auto Commandline::run() -> void
 
 auto Commandline::add_command(CommandName name, CommandCallback callback) -> bool
 {
-  auto [_it, did_emplace] = commands.try_emplace(name, std::move(callback));
+  auto [_it, did_emplace] = commands.try_emplace(std::move(name), std::move(callback));
 
   return did_emplace;
 }
