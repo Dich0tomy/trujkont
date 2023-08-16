@@ -106,7 +106,7 @@ auto main() -> int
 
   glfwMakeContextCurrent(window);
 
-  if(not gladLoadGL()) {
+  if(gladLoadGL() == 0) {
     fmt::print(stderr, "Failed to initialize GLAD\n");
 
     return -1;
@@ -189,7 +189,7 @@ auto main() -> int
   }; */
   // clang-format on
 
-  stbi_set_flip_vertically_on_load(true);
+  stbi_set_flip_vertically_on_load(static_cast<int>(true));
   glEnable(GL_DEPTH_TEST);
   glEnable(GL_BLEND);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
