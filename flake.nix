@@ -22,7 +22,7 @@
 
       devShells.default = with pkgs;
         mkShell.override {
-          stdenv = lowPrio llvmPackages_15.stdenv;
+          stdenv = hiPrio llvmPackages_15.stdenv;
         } {
           buildInputs = [
             ### opengl and such
@@ -34,8 +34,10 @@
             libxkbcommon
             libGL
             libglvnd
+            freetype
 
             ### cpp general
+            cmake
             clang-tools_15
             nixgl.auto.nixGLDefault
             pkgconfig

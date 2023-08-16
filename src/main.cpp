@@ -6,6 +6,7 @@
 #include <array>
 
 #include <trujkont/shader_program.hpp>
+#include <trujkont/commandline.hpp>
 #include <trujkont/delta_time.hpp>
 #include <trujkont/callbacks.hpp>
 #include <trujkont/billboard.hpp>
@@ -226,9 +227,8 @@ auto main() -> int
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
   glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(int), indices.data(), GL_STATIC_DRAW);
 
-  auto babushka_texture = Texture("assets/awesomeface.png", TextureFormat::RGBA);
-  shader_program.set_uniform_1i("face_texture", babushka_texture.get_slot());
-  // shader_program.set_uniform_1i("face_texture", 1);
+  auto face_texture = Texture("assets/babushka.png", TextureFormat::RGB);
+  shader_program.set_uniform_1i("face_texture", face_texture.get_slot());
 
   auto delta_time = DeltaTime();
 
@@ -247,8 +247,16 @@ auto main() -> int
 
   auto camera = Camera(window);
 
-  auto const awesomeface_texture = Texture("assets/babushka.png", TextureFormat::RGB);
-  auto face_billboard = Billboard(awesomeface_texture, glm::vec3(1.0, 1.0, -5.0));
+  auto const billboard_texture = Texture("assets/awesomeface.png", TextureFormat::RGBA);
+  auto face_billboard = Billboard(billboard_texture, glm::vec3(1.0, 1.0, -5.0));
+
+  auto commandline = Commandline();
+
+  commandline.add_command("help", [](Commandline::CommandArgs args) -> Commandline::CommandResult {
+    return "Twoja stara zrogowaciala siadala na butli od vanisha";
+  });
+
+  auto commandline_thread = std::jthread(&Commandline::run, commandline);
 
   while(not glfwWindowShouldClose(window)) {
     shader_program.use();

@@ -77,7 +77,7 @@ NamespaceIndentation: None
 PackConstructorInitializers: Never
 PointerAlignment: Left
 QualifierAlignment: Custom
-QualifierOrder: ['inline', 'static', 'type', 'const', 'volatile', 'constexpr']
+QualifierOrder: ['type', 'volatile', 'inline', 'static', 'const', 'constexpr']
 ReflowComments: false
 RequiresClausePosition: OwnLine
 SeparateDefinitionBlocks: Always
