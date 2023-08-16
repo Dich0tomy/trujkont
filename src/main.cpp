@@ -6,6 +6,7 @@
 #include <array>
 
 #include <trujkont/shader_program.hpp>
+#include <trujkont/delta_time.hpp>
 #include <trujkont/callbacks.hpp>
 #include <trujkont/billboard.hpp>
 #include <trujkont/texture.hpp>
@@ -229,11 +230,7 @@ auto main() -> int
   shader_program.set_uniform_1i("face_texture", babushka_texture.get_slot());
   // shader_program.set_uniform_1i("face_texture", 1);
 
-  // fmt::print("X: {} Y: {} Z: {}", vec.x, vec.y, vec.z);
-
-  using Clock = std::chrono::steady_clock;
-  auto delta_time = Clock::duration::rep();
-  auto last_frame_time = Clock::time_point();
+  auto delta_time = DeltaTime();
 
   auto const cube_positions = std::array {
     glm::vec3(1.0f, 3.0f, -5.5f),
@@ -274,11 +271,7 @@ auto main() -> int
       glDrawArrays(GL_TRIANGLES, 0, 36);
     }
 
-    auto const now = Clock::now();
-    delta_time = std::chrono::duration_cast<std::chrono::milliseconds>(now - last_frame_time).count();
-    last_frame_time = now;
-
-    auto const [view, projection] = camera.update(delta_time, static_cast<float>(window_width) / window_height);
+    auto const [view, projection] = camera.update(delta_time.get(), static_cast<float>(window_width) / window_height);
 
     face_billboard.update(camera.position, view, projection);
 
