@@ -26,7 +26,7 @@ public:
 private:
   using CommandlineResult = std::pair<CommandName, CommandArgs>;
 
-  auto parse_commandline(std::string line) -> CommandlineResult;
+  auto static parse_commandline(std::string line) -> CommandlineResult;
 
   auto dispatch_command(CommandlineResult result) -> void;
 

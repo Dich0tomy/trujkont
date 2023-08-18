@@ -7,6 +7,7 @@
 #include <range/v3/range/conversion.hpp>
 #include <range/v3/view/transform.hpp>
 #include <range/v3/view/common.hpp>
+#include <range/v3/view/single.hpp>
 #include <range/v3/view/split.hpp>
 #include <range/v3/view/take.hpp>
 #include <range/v3/view/drop.hpp>
@@ -49,7 +50,7 @@ auto Commandline::parse_commandline(std::string line) -> CommandlineResult
 
 auto Commandline::dispatch_command(CommandlineResult result) -> void
 {
-  auto const [name, args] = result;
+  auto [name, args] = std::move(result);
 
   auto const command_it = commands.find(name);
 
@@ -58,7 +59,7 @@ auto Commandline::dispatch_command(CommandlineResult result) -> void
     return;
   }
 
-  auto const command_result = command_it->second(args);
+  auto const command_result = command_it->second(std::move(args));
 
   if(command_result.has_value()) {
     fmt::print(fg(fmt::color::sky_blue), "{}\n", command_result.value());
