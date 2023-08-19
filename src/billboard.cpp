@@ -13,7 +13,7 @@
 namespace
 {
 
-auto read_shader_source(std::filesystem::path const path)
+auto read_shader_source(std::filesystem::path const& path)
 {
   if(not std::filesystem::exists(path)) {
     throw std::runtime_error(
@@ -24,7 +24,7 @@ auto read_shader_source(std::filesystem::path const path)
   auto file = std::ifstream(path.c_str());
 
   auto source = std::string();
-  source.reserve(100);
+  source.reserve(128);
 
   auto line = std::string();
   while(std::getline(file, line)) {
@@ -67,7 +67,7 @@ Billboard::Billboard(Texture const texture, glm::vec3 position)
   }
 
   billboard_shader_program.use();
-  billboard_shader_program.set_uniform_1i("billboard_texture", texture.get_slot());
+  billboard_shader_program.set_uniform_1ui("billboard_texture", texture.get_slot());
 }
 
 auto print_matrix(glm::mat4 const& mat)
@@ -79,10 +79,9 @@ auto print_matrix(glm::mat4 const& mat)
   fmt::print("\n\n\n");
 }
 
-auto Billboard::update(glm::vec3 const& camera_position, glm::mat4 const& camera_view, glm::mat4 const& camera_projection) -> void
+auto Billboard::update(glm::mat4 const& camera_view, glm::mat4 const& camera_projection) -> void
 {
-  model = glm::mat4(1.f);
-  model = glm::translate(model, position);
+  auto const model = glm::translate(glm::mat4(1.0F), position);
 
   auto no_rotation_model_view_matrix = (camera_view * model);
 
