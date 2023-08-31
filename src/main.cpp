@@ -283,7 +283,7 @@ auto main() -> int
 
     auto const [view, projection] = camera.update(delta_time.get(), static_cast<float>(window_width) / window_height);
 
-    face_billboard.update(camera.position, view, projection);
+    face_billboard.update(view, projection);
 
     shader_program.use();
     shader_program.set_uniform_4mat("view", view);
