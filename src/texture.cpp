@@ -10,7 +10,7 @@ Texture::Texture(TextureFormat const format) noexcept
 {
   basic_info.format = format;
 
-  static auto current_slot_nr = 0;
+  auto static current_slot_nr = 0;
   basic_info.slot = current_slot_nr;
 
   current_slot_nr++;
@@ -45,7 +45,7 @@ Texture::Texture(std::filesystem::path const& texture_path, TextureFormat const 
   stbi_image_free(data);
 }
 
-auto Texture::get_slot() const noexcept -> unsigned
+auto Texture::get_slot() const noexcept -> TextureSlot
 {
   return basic_info.slot;
 }

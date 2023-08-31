@@ -14,18 +14,18 @@ class Billboard : Quad
 public:
   Billboard();
 
-  Billboard(Texture texture, glm::vec3 position);
+  Billboard(TextureSlot txt_slot, glm::vec3 position);
 
   auto update(glm::mat4 const& camera_view, glm::mat4 const& camera_projection) -> void;
 
 private:
   glm::vec3 position = glm::vec3(0.);
 
-  Texture texture;
-
   ShaderProgram billboard_shader_program;
 
   GLuint VAO = 0;
+
+  TextureSlot texture_slot;
 
   auto inline static constexpr attrs_per_vertex = 5;
 };

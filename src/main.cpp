@@ -241,13 +241,16 @@ auto main() -> int
   auto camera = Camera(window);
 
   auto const billboard_texture = Texture("assets/awesomeface.png", TextureFormat::RGBA);
-  auto face_billboard = Billboard(billboard_texture, glm::vec3(1.0, 1.0, -5.0));
+  auto face_billboard = Billboard(billboard_texture.get_slot(), glm::vec3(1.0, 1.0, -5.0));
 
   auto commandline = Commandline();
 
-  commandline.add_command("help", []([[maybe_unused]] Commandline::CommandArgs args) -> Commandline::CommandResult {
-    return "Twoja stara zrogowaciala siadala na butli od vanisha";
-  });
+  commandline.add_command(
+    "help",
+    []([[maybe_unused]] Commandline::CommandArgs args) -> Commandline::CommandResult {
+      return "Twoja stara zrogowaciala siadala na butli od vanisha";
+    }
+  );
 
   auto commandline_thread = std::jthread(&Commandline::run, commandline);
 

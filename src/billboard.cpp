@@ -38,12 +38,12 @@ auto read_shader_source(std::filesystem::path const& path)
 } // namespace
 
 Billboard::Billboard()
-  : Billboard(Texture(), glm::vec3(0.))
+  : Billboard(0, glm::vec3(0.))
 {}
 
-Billboard::Billboard(Texture const texture, glm::vec3 position)
+Billboard::Billboard(TextureSlot const txt_slot, glm::vec3 position)
   : position(position),
-    texture(texture)
+    texture_slot(txt_slot)
 {
   auto billboard_vertex_shader_source = read_shader_source("src/shaders/billboard.vert");
   auto const vertex_shader = Shader(ShaderType::Vertex, billboard_vertex_shader_source);
@@ -67,7 +67,7 @@ Billboard::Billboard(Texture const texture, glm::vec3 position)
   }
 
   billboard_shader_program.use();
-  billboard_shader_program.set_uniform_1ui("billboard_texture", texture.get_slot());
+  billboard_shader_program.set_uniform_1ui("billboard_texture", texture_slot);
 }
 
 auto print_matrix(glm::mat4 const& mat)

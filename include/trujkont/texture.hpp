@@ -4,6 +4,8 @@
 
 #include <glad/glad.h>
 
+using TextureSlot = unsigned int;
+
 enum class TextureFormat : GLuint
 {
   RGB = GL_RGB,
@@ -18,7 +20,7 @@ struct TextureBasicInfo
   int height = 0;
   int channels_number = 0;
 
-  unsigned slot = 0;
+  TextureSlot slot = 0;
   GLuint id = 0;
 };
 
@@ -28,7 +30,7 @@ public:
   Texture(TextureFormat const format = TextureFormat::RGB) noexcept;
   Texture(std::filesystem::path const& texture_path, TextureFormat const format = TextureFormat::RGB);
 
-  auto get_slot() const noexcept -> unsigned;
+  auto get_slot() const noexcept -> TextureSlot;
 
 private:
   TextureBasicInfo basic_info;
