@@ -181,12 +181,6 @@ auto main() -> int
       -0.5F,  0.5F, -0.5F,  0.0F, 1.0F
   };
 
-  /* auto const vertices = std::vector {
-    0.5f,  0.5f, 0.0f,    1.0f, 0.0f, 0.0f,   1.0f, 1.0f, // NOTE: top right
-    0.5f, -0.5f, 0.0f,    0.0f, 1.0f, 0.0f,   1.0f, 0.0f, // bottom right
-    -0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f, // bottom left
-    -0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f, // bottom right
-  }; */
   // clang-format on
 
   stbi_set_flip_vertically_on_load(static_cast<int>(true));
@@ -212,9 +206,6 @@ auto main() -> int
   // NOLINTNEXTLINE
   glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, attrs_per_vertex * sizeof(float), reinterpret_cast<void*>(3 * sizeof(float)));
   glEnableVertexAttribArray(1);
-
-  // glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, attrs_per_vertex * sizeof(float), reinterpret_cast<void*>(6 * sizeof(float)));
-  // glEnableVertexAttribArray(2);
 
   // clang-format off
   auto const indices = std::array {
@@ -267,7 +258,6 @@ auto main() -> int
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     glBindVertexArray(VAO);
-    // glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
 
     auto constexpr cubes = 10;
     for(auto i = 1; i <= cubes; ++i) {
