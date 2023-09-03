@@ -12,9 +12,20 @@
 #include <range/v3/view/take.hpp>
 #include <range/v3/view/drop.hpp>
 #include <range/v3/view/join.hpp>
+#include <range/v3/view/trim.hpp>
 
 #include <fmt/format.h>
 #include <fmt/color.h>
+
+namespace
+{
+
+auto whitespace(char const c) // NOLINT
+{
+  return std::isspace(c);
+};
+
+} // namespace
 
 auto Commandline::run() -> void
 {
@@ -40,7 +51,7 @@ auto Commandline::parse_commandline(std::string line) -> CommandlineResult
   namespace rg = ranges;
   namespace vw = rg::views;
 
-  auto elems = line | vw::split(' ');
+  auto elems = line | vw::trim(whitespace) | vw::split(' ');
 
   auto command_name = elems | vw::take(1) | vw::join | rg::to<std::string>();
   auto args = elems | vw::drop(1) | rg::to<std::vector<std::string>>();
