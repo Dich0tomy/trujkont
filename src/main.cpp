@@ -27,14 +27,6 @@
 
 #include "stb_image.h"
 
-/*
-Local space (or Object space)
-World space
-View space (or Eye space)
-Clip space
-Screen space
-*/
-
 auto enable_debug_info()
 {
   glfwSetErrorCallback(callbacks::glfw_error_callback);
