@@ -37,6 +37,8 @@
             freetype
 
             ### cpp general
+            llvmPackages_15.libllvm
+            gdb
             cmake
             clang-tools_15
             nixgl.auto.nixGLDefault
@@ -50,6 +52,7 @@
           ];
 
           env = {
+            ASAN_SYMBOLIZER_PATH = "${pkgs.llvmPackages_15.libllvm}/bin/llvm-symbolizer";
             CLANGD_PATH = "${pkgs.clang-tools_15}/bin/clangd";
             CXX_LD = "mold";
           };
