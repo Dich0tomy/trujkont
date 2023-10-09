@@ -18,5 +18,6 @@
 !.envrc
 !flake.lock
 !flake.nix
+!todo.norg
 
 !assets

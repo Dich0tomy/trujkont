@@ -1,0 +1,13 @@
+@document.meta
+title: todo and stuff
+description: todo, notes, etc.
+authors: B4mbus (Daniel Zaradny)
+categories: notes
+created: 2023-10-09
+updated: 2023-10-09
+version: 0.1.0
+@end
+
+~ Need to generally refactor the app in the `Trujkont`
+~ Need to create a threadpool and uses that
+~ Need to create some sort of thread synchronization, currently the command prompt in the commandline still lives, even when the window is closed.
