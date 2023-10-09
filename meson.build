@@ -53,6 +53,7 @@ sources = files(
   'src/callbacks.cpp',
   'src/stb_image.cpp',
   'src/billboard.cpp',
+  'src/trujkont.cpp',
   'src/texture.cpp',
   'src/camera.cpp',
   'src/quad.cpp'

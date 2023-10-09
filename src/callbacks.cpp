@@ -3,6 +3,7 @@
 #include <trujkont/callbacks.hpp>
 
 #include <fmt/format.h>
+#include <fmt/color.h>
 
 // clang-format off
 #include <glad/glad.h>
@@ -10,9 +11,11 @@
 
 // clang-format on
 
-namespace callbacks {
+namespace callbacks
+{
 
-auto glfw_error_callback(int error_code, char const* desc) -> void {
+auto glfw_error_callback(int error_code, char const* desc) -> void
+{
   fmt::print(stderr, "GLFW error:\n\n{}\n", desc);
 
   std::exit(error_code);
@@ -26,18 +29,21 @@ auto gl_error_callback(
   [[maybe_unused]] GLsizei length,
   GLchar const* message,
   [[maybe_unused]] void const* userParam
-) -> void {
+) -> void
+{
   if(GL_DEBUG_SEVERITY_HIGH >= severity or severity >= GL_DEBUG_SEVERITY_LOW) return;
 
   fmt::print(
     stderr,
+    fg(fmt::color::red),
     "GL error: [[\n\ttype: {}\n\tmessage: {}]]",
     (type == GL_DEBUG_TYPE_ERROR ? "** GL ERROR **" : ""),
     message
   );
 }
 
-auto framebuffer_size_callback([[maybe_unused]] GLFWwindow* window, int width, int height) -> void {
+auto framebuffer_size_callback([[maybe_unused]] GLFWwindow* window, int width, int height) -> void
+{
   glViewport(0, 0, width, height);
 }
 
