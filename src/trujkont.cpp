@@ -94,14 +94,14 @@ auto Trujkont::run() -> int
 
   auto* const window = glfwCreateWindow(window_width, window_height, "Creatix to kot", nullptr, nullptr);
 
-  glfwSetWindowAttrib(window, GLFW_DECORATED, GLFW_FALSE);
-
   if(not window) {
     fmt::print(stderr, "Failed to initialize OpenGL window :(\n");
     glfwTerminate();
 
     return -1;
   }
+
+  glfwSetWindowAttrib(window, GLFW_DECORATED, GLFW_FALSE);
 
   glfwMakeContextCurrent(window);
 
