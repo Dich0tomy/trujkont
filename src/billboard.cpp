@@ -1,14 +1,16 @@
 #include <fstream>
 
-#include <fmt/format.h>
-
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtx/euler_angles.hpp>
-
 #include "trujkont/shader_program.hpp"
 #include "trujkont/billboard.hpp"
 #include "trujkont/shader.hpp"
 #include "trujkont/texture.hpp"
+
+#include <fmt/format.h>
+
+#include <range/v3/all.hpp>
+
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtx/euler_angles.hpp>
 
 namespace
 {
@@ -23,16 +25,10 @@ auto read_shader_source(std::filesystem::path const& path)
 
   auto file = std::ifstream(path.c_str());
 
-  auto source = std::string();
-  source.reserve(128);
-
-  auto line = std::string();
-  while(std::getline(file, line)) {
-    source.append(line);
-    source.append("\n");
-  }
-
-  return source;
+  return std::string(
+    std::istreambuf_iterator<char>(file),
+    {}
+  );
 }
 
 } // namespace
