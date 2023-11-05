@@ -42,7 +42,7 @@
             cmake
             clang-tools_15
             nixgl.auto.nixGLDefault
-            pkgconfig
+            pkg-config
             mold
 
             #### this project specific

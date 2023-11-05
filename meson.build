@@ -36,7 +36,7 @@ local_deps = [
 ]
 
 compilation_options = [
-  'cpp_std=c++20'
+  'cpp_std=c++2b'
 ]
 
 include_dirs = [
