@@ -14,7 +14,7 @@ public:
 private:
   GLuint VAO;
 
-  inline static auto constexpr attrs_per_vertex = 5;
+  auto inline static constexpr attrs_per_vertex = 5;
 
   // clang-format off
   inline static auto constexpr vertices = std::array {
