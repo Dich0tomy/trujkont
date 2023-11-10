@@ -40,23 +40,25 @@ compilation_options = [
 ]
 
 include_dirs = [
-  include_directories('include')
+  include_directories('src')
 ]
 
 sources = files(
-  'src/glad.c',
+  'src/glad/glad.c',
+  'src/stb/stb_image.cpp',
 
-  'src/main.cpp',
+  'src/trujkont/main.cpp',
 
-  'src/commandline.cpp',
-  'src/delta_time.cpp',
-  'src/callbacks.cpp',
-  'src/stb_image.cpp',
-  'src/billboard.cpp',
-  'src/trujkont.cpp',
-  'src/texture.cpp',
-  'src/camera.cpp',
-  'src/quad.cpp'
+  'src/trujkont/commandline.cpp',
+  'src/trujkont/delta_time.cpp',
+  'src/trujkont/callbacks.cpp',
+
+
+  'src/trujkont/billboard.cpp',
+  'src/trujkont/trujkont.cpp',
+  'src/trujkont/texture.cpp',
+  'src/trujkont/camera.cpp',
+  'src/trujkont/quad.cpp'
 )
 
 executable(

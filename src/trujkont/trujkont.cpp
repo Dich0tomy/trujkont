@@ -27,7 +27,7 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/glm.hpp>
 
-#include "stb_image.h"
+#include "stb/stb_image.h"
 
 auto enable_debug_info()
 {

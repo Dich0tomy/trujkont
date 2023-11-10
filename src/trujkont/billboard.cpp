@@ -41,14 +41,14 @@ Billboard::Billboard(TextureSlot const txt_slot, glm::vec3 position)
   : position(position),
     texture_slot(txt_slot)
 {
-  auto billboard_vertex_shader_source = read_shader_source("src/shaders/billboard.vert");
+  auto billboard_vertex_shader_source = read_shader_source("src/trujkont/shaders/billboard.vert");
   auto const vertex_shader = Shader(ShaderType::Vertex, billboard_vertex_shader_source);
   if(vertex_shader.param<ShaderAttr::CompileStatus>() != GL_TRUE) {
     fmt::print(stderr, "Vertex shader compilation failed! Log:\n\n{}\n", vertex_shader.log());
     throw std::runtime_error("Cannot compile billboard vertex shader!");
   }
 
-  auto billboard_fragment_shader_source = read_shader_source("src/shaders/billboard.frag");
+  auto billboard_fragment_shader_source = read_shader_source("src/trujkont/shaders/billboard.frag");
   auto const frag_shader = Shader(ShaderType::Fragment, billboard_fragment_shader_source);
   if(frag_shader.param<ShaderAttr::CompileStatus>() != GL_TRUE) {
     fmt::print(stderr, "Fragment shader compilation failed! Log:\n\n{}\n", frag_shader.log());

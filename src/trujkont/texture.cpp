@@ -4,7 +4,7 @@
 
 #include <glad/glad.h>
 
-#include "stb_image.h"
+#include "stb/stb_image.h"
 
 Texture::Texture(TextureFormat const format) noexcept
 {
@@ -19,7 +19,7 @@ Texture::Texture(TextureFormat const format) noexcept
 Texture::Texture(std::filesystem::path const& texture_path, TextureFormat const format)
   : Texture(format)
 {
-  auto *const data = stbi_load(
+  auto* const data = stbi_load(
     texture_path.c_str(),
     &basic_info.width,
     &basic_info.height,
