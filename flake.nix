@@ -1,62 +1,65 @@
 {
   inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
-
-    flake-utils.url = "github:numtide/flake-utils";
-
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    flake-parts.url = "github:hercules-ci/flake-parts";
     nixgl.url = "github:guibou/nixGL";
   };
 
-  outputs = {
-    nixpkgs,
-    flake-utils,
-    ...
-  } @ inputs:
-    flake-utils.lib.eachDefaultSystem (system: let
-      pkgs = import nixpkgs {
-        inherit system;
-        overlays = [ inputs.nixgl.overlay ];
-      };
-    in {
-      formatter = pkgs.alejandra;
-
-      devShells.default = with pkgs;
-        mkShell.override {
-          stdenv = hiPrio llvmPackages_15.stdenv;
-        } {
-          buildInputs = [
-            ### opengl and such
-            xorg.libX11
-            xorg.libXrandr
-            xorg.libXinerama
-            xorg.libXcursor
-            xorg.libXi
-            libxkbcommon
-            libGL
-            libglvnd
-            freetype
-
-            ### cpp general
-            llvmPackages_15.libllvm
-            gdb
-            cmake
-            clang-tools_15
-            nixgl.auto.nixGLDefault
-            pkg-config
-            mold
-
-            #### this project specific
-            just
-            ninja
-            meson
-          ];
-
-          env = {
-            ASAN_SYMBOLIZER_PATH = "${pkgs.llvmPackages_15.libllvm}/bin/llvm-symbolizer";
-            CLANGD_PATH = "${pkgs.clang-tools_15}/bin/clangd";
-            CXX_LD = "mold";
-          };
+  outputs = inputs @ {flake-parts, ...}:
+    flake-parts.lib.mkFlake {inherit inputs;} {
+      systems = ["x86_64-linux"];
+      perSystem = {
+        config,
+        self',
+        inputs',
+        pkgs,
+        system,
+        ...
+      }: {
+        _module.args.pkgs = import inputs.nixpkgs {
+          inherit system;
+          overlays = [inputs.nixgl.overlay];
         };
 
-    });
+        formatter = pkgs.alejandra;
+
+        devShells.default =
+          pkgs.mkShell.override {
+            stdenv = pkgs.clang16Stdenv;
+          } {
+            buildInputs = [
+              ### opengl and such
+              pkgs.xorg.libX11
+              pkgs.xorg.libXrandr
+              pkgs.xorg.libXinerama
+              pkgs.xorg.libXcursor
+              pkgs.xorg.libXi
+              pkgs.libxkbcommon
+              pkgs.libGL
+              pkgs.libglvnd
+              pkgs.freetype
+
+              ### cpp general
+              pkgs.llvmPackages_16.libllvm
+              pkgs.gdb
+              pkgs.cmake
+              pkgs.clang-tools_16
+              pkgs.nixgl.auto.nixGLDefault
+              pkgs.pkg-config
+              pkgs.mold
+
+              #### this project specific
+              pkgs.just
+              pkgs.ninja
+              pkgs.meson
+            ];
+
+            env = {
+              ASAN_SYMBOLIZER_PATH = "${pkgs.llvmPackages_16.libllvm}/bin/llvm-symbolizer";
+              CLANGD_PATH = "${pkgs.clang-tools_16}/bin/clangd";
+              CXX_LD = "mold";
+            };
+          };
+      };
+    };
 }
