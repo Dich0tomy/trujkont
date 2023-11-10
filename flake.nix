@@ -1,6 +1,6 @@
 {
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    nixpkgs.url = "github:NixOS/nixpkgs/23.05";
     flake-parts.url = "github:hercules-ci/flake-parts";
     nixgl.url = "github:guibou/nixGL";
   };
