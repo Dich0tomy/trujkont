@@ -2,7 +2,7 @@
 #include <utility>
 #include <string>
 
-#include "trujkont/commandline.hpp"
+#include "trujkont/commandline/commandline.hpp"
 
 #include <range/v3/range/conversion.hpp>
 #include <range/v3/view/transform.hpp>
@@ -29,7 +29,7 @@ auto whitespace(char const c) // NOLINT
 
 auto Commandline::run() -> void
 {
-  while(true) {
+  while(not should_stop) {
     auto line = std::string();
 
     fmt::print("> ");
@@ -37,6 +37,11 @@ auto Commandline::run() -> void
 
     dispatch_command(parse_commandline(std::move(line)));
   }
+}
+
+auto Commandline::stop() -> void
+{
+  should_stop = true;
 }
 
 auto Commandline::add_command(CommandName name, CommandCallback callback) -> bool

@@ -1,4 +1,4 @@
-#include "trujkont/texture.hpp"
+#include "trujkont/texture/texture.hpp"
 
 #include <fmt/format.h>
 

@@ -4,7 +4,7 @@
 #include <concepts>
 #include <array>
 
-#include "trujkont/shader.hpp"
+#include "trujkont/shader_program/shader.hpp"
 
 #include <glad/glad.h>
 

@@ -1,4 +1,4 @@
-#include "trujkont/quad.hpp"
+#include "trujkont/quad/quad.hpp"
 
 Quad::Quad()
 {

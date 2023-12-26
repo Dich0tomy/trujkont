@@ -1,6 +1,6 @@
 #include <cstdlib>
 
-#include <trujkont/callbacks.hpp>
+#include "trujkont/callbacks/callbacks.hpp"
 
 #include <fmt/format.h>
 #include <fmt/color.h>

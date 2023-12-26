@@ -1,4 +1,4 @@
-#include "trujkont/camera.hpp"
+#include "trujkont/camera/camera.hpp"
 
 namespace
 {

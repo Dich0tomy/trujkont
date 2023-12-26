@@ -7,14 +7,14 @@
 #include <chrono>
 #include <array>
 
-#include <trujkont/shader_program.hpp>
-#include <trujkont/commandline.hpp>
-#include <trujkont/delta_time.hpp>
-#include <trujkont/callbacks.hpp>
-#include <trujkont/billboard.hpp>
-#include <trujkont/texture.hpp>
-#include <trujkont/shader.hpp>
-#include <trujkont/camera.hpp>
+#include <trujkont/shader_program/shader_program.hpp>
+#include <trujkont/commandline/commandline.hpp>
+#include <trujkont/delta_time/delta_time.hpp>
+#include <trujkont/shader_program/shader.hpp>
+#include <trujkont/callbacks/callbacks.hpp>
+#include <trujkont/billboard/billboard.hpp>
+#include <trujkont/texture/texture.hpp>
+#include <trujkont/camera/camera.hpp>
 
 #include <fmt/format.h>
 
@@ -250,6 +250,14 @@ auto Trujkont::run() -> int
     "help",
     []([[maybe_unused]] Commandline::CommandArgs args) -> Commandline::CommandResult {
       return "Twoja stara zrogowaciala siadala na butli od vanisha";
+    }
+  );
+
+  commandline.add_command(
+    "exit",
+    [&commandline]([[maybe_unused]] Commandline::CommandArgs args) -> Commandline::CommandResult {
+      commandline.stop();
+      std::exit(0);
     }
   );
 

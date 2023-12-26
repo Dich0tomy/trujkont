@@ -20,6 +20,7 @@ public:
   Commandline() = default;
 
   auto run() -> void;
+  auto stop() -> void;
 
   auto add_command(CommandName name, CommandCallback callback) -> bool;
 
@@ -31,4 +32,5 @@ private:
   auto dispatch_command(CommandlineResult result) -> void;
 
   std::unordered_map<CommandName, CommandCallback> commands;
+  bool should_stop = false;
 };

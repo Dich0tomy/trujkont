@@ -48,17 +48,17 @@ sources = files(
   'src/stb/stb_image.cpp',
 
   'src/trujkont/main.cpp',
-
-  'src/trujkont/commandline.cpp',
-  'src/trujkont/delta_time.cpp',
-  'src/trujkont/callbacks.cpp',
-
-
-  'src/trujkont/billboard.cpp',
   'src/trujkont/trujkont.cpp',
-  'src/trujkont/texture.cpp',
-  'src/trujkont/camera.cpp',
-  'src/trujkont/quad.cpp'
+
+  'src/trujkont/commandline/commandline.cpp',
+  'src/trujkont/delta_time/delta_time.cpp',
+  'src/trujkont/callbacks/callbacks.cpp',
+
+
+  'src/trujkont/billboard/billboard.cpp',
+  'src/trujkont/texture/texture.cpp',
+  'src/trujkont/camera/camera.cpp',
+  'src/trujkont/quad/quad.cpp'
 )
 
 executable(

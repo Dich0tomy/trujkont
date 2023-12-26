@@ -1,4 +1,4 @@
-#include "trujkont/delta_time.hpp"
+#include "trujkont/delta_time/delta_time.hpp"
 
 auto DeltaTime::get() noexcept -> TickType
 {

@@ -1,9 +1,11 @@
 #include <fstream>
 
-#include "trujkont/shader_program.hpp"
-#include "trujkont/billboard.hpp"
-#include "trujkont/shader.hpp"
-#include "trujkont/texture.hpp"
+#include "trujkont/billboard/billboard.hpp"
+
+#include "trujkont/shader_program/shader_program.hpp"
+#include "trujkont/shader_program/shader.hpp"
+
+#include "trujkont/texture/texture.hpp"
 
 #include <fmt/format.h>
 

@@ -5,9 +5,9 @@
 
 #include <glm/glm.hpp>
 
-#include "trujkont/shader_program.hpp"
-#include "trujkont/texture.hpp"
-#include "trujkont/quad.hpp"
+#include "trujkont/shader_program/shader_program.hpp"
+#include "trujkont/texture/texture.hpp"
+#include "trujkont/quad/quad.hpp"
 
 class Billboard : Quad
 {
